@@ -1,0 +1,287 @@
+// ====================================================================
+//    KnuclMaterials.icc
+//
+//                                 F.Sakuma May,2007
+// ====================================================================
+
+////////////////////////////////////////////
+void KnuclMaterialManager::DefineMaterials()
+////////////////////////////////////////////
+{
+  // temperature of experimental hall is controlled at 20 degree.
+  const G4double expTemp= (STP_Temperature+20.)*kelvin; 
+
+  G4double a;  // atomic mass
+  G4double z;  // atomic number
+  G4double density;
+
+  //--- element ---//
+
+  a = 1.01*g/mole;
+  G4Element* elH  = new G4Element("Hydrogen","H" , z= 1., a);
+
+  a = 2.00*g/mole;
+  G4Element* elD  = new G4Element("Deuteron","D" , z= 1., a);
+
+  a = 12.00*g/mole;
+  G4Element* elC  = new G4Element("Carbon"  ,"C" , z= 6., a);
+
+  a = 14.01*g/mole;
+  G4Element* elN  = new G4Element("Nitrogen","N" , z= 7., a);
+
+  a = 16.00*g/mole;
+  G4Element* elO  = new G4Element("Oxygen"  ,"O" , z= 8., a);
+
+  a = 35.00*g/mole;
+  G4Element* elCl  = new G4Element("Chlorine"  ,"Cl" , z= 17., a);
+
+  a = 39.948*g/mole;
+  new G4Element("Argon"   ,"Ar", z=18., a);
+
+  a = 4.00*g/mole;
+  G4Element* elHe4 = new G4Element("Helium-4", "He4", z=2., a);
+
+  a = 3.00*g/mole;
+  G4Element* elHe3 = new G4Element("Helium-3", "He3", z=2.0, a);
+
+  //-- material ---//
+
+  const G4double denAr= 1.782 *mg/cm3 * STP_Temperature/expTemp;
+  G4Material* Ar = 
+    new G4Material("ArgonGas",  z= 18., a= 39.95 *g/mole, denAr,
+		   kStateGas, expTemp);
+
+  new G4Material("Aluminum",  z= 13., a= 26.98     *g/mole, density= 2.7  * g/cm3);
+
+  new G4Material("Beryllium", z=  4., a=  9.012182 *g/mole, density= 1.848* g/cm3);
+
+  new G4Material("Tungsten",  z= 74,  a=183.84     *g/mole, density=19.3  * g/cm3);
+
+  new G4Material("interGalactic", z=1., a= 1.008*g/mole, density = 1.e-25*g/cm3, 
+		 kStateGas, 2.73*kelvin, 3.e-18*pascal);
+  new G4Material("Vacuum", z=1., a= 1.008*g/mole, density = 1.e-25*g/cm3, 
+		 kStateGas, 2.73*kelvin, 3.e-18*pascal);
+ 
+  a = 55.85*g/mole;
+  density = 7.87*g/cm3;
+  new G4Material("Iron", z=26., a, density);
+
+  a = 63.546*g/mole;
+  density = 8.96*g/cm3;
+  new G4Material("Copper", z=29., a, density);
+
+  a = 12.0107*g/mole;
+  density = 1.80*g/cm3;
+  new G4Material("Carbon", z=6., a, density);
+
+  a= 196.966569*g/mole;
+  density= 19.320*g/cm3;
+  new G4Material("Gold", z=79., a, density);
+
+
+  a = 4.00*g/mole;
+  const G4double denHe = 0.1786*mg/cm3 * STP_Temperature/expTemp;
+  G4Material* HeGas = new G4Material("GHelium-4", z=2., a, denHe, 
+				     kStateGas, expTemp);
+
+  G4int ncomponents;
+  G4int natoms;
+
+  // CO2
+  const G4double denCO2= 1.977 *mg/cm3 * STP_Temperature/expTemp;
+  G4Material* CO2= new G4Material("CO2", denCO2, ncomponents=2,
+                                     kStateGas, expTemp);
+  CO2-> AddElement(elC, natoms=1);
+  CO2-> AddElement(elO, natoms=2);
+
+  // methane (CH4)
+  const G4double denMethane= 0.717 *mg/cm3 * STP_Temperature/expTemp;
+  G4Material* Methane= new G4Material("Methane", denMethane, ncomponents=2,
+                                     kStateGas, expTemp);
+  Methane-> AddElement(elC, natoms=1);
+  Methane-> AddElement(elH, natoms=4);
+
+  // ethane (C2H6)
+  const G4double denEthane= 1.356 *mg/cm3 * STP_Temperature/expTemp;
+  G4Material* Ethane= new G4Material("Ethane", denEthane, ncomponents=2,
+                                     kStateGas, expTemp);
+  Ethane-> AddElement(elC, natoms=2);
+  Ethane-> AddElement(elH, natoms=6);
+
+  // Isobutane, (CH3)2CHCH3
+  const G4double denIsobutane= 2.67 *mg/cm3 * STP_Temperature/expTemp;
+  G4Material* Isobutane= new G4Material("Isobutane", denIsobutane, ncomponents=2,
+                                        kStateGas, expTemp); 
+  Isobutane-> AddElement(elH, natoms=10);
+  Isobutane-> AddElement(elC, natoms=4);
+
+  //liquid scintilator
+  density = 0.874*g/cm3;
+  G4Material* NE213 = new G4Material("NE213",density,ncomponents=2);
+  NE213->AddElement(elC, natoms=8);
+  NE213->AddElement(elH, natoms=10);
+
+  // scintillator (Polystyrene(C6H5CH=CH2))
+  density = 1.032*g/cm3;
+  G4Material* Scinti = new G4Material("Plastic",density,ncomponents=2);
+  Scinti->AddElement(elC, natoms=8);
+  Scinti->AddElement(elH, natoms=8);
+
+  density = 0.935*g/cm3;
+  G4Material* CH2 = new G4Material("CH2",density,ncomponents=2);
+  CH2->AddElement(elC, natoms=1);
+  CH2->AddElement(elH, natoms=2);
+
+  density = 1.700*g/cm3;
+  G4Material* CFRP = new G4Material("CFRP",density,ncomponents=1);
+  CFRP->AddElement(elC, natoms=1);
+
+  density = 1.205*mg/cm3; // at 20degree, 1atm
+  G4Material* Air = new G4Material("Air",density,ncomponents=2,
+				   kStateGas, expTemp);
+  Air->AddElement(elN, 0.7);
+  Air->AddElement(elO, 0.3);
+
+  G4double massfraction;
+  
+  //HeEthan50-50
+  density = 0.5*denHe + 0.5*denEthane;
+  G4Material* HeEthan_50_50 = new G4Material("He_Ethan_50_50",density,ncomponents=2,
+					     kStateGas, expTemp);
+  HeEthan_50_50 -> AddMaterial(HeGas, massfraction= 0.5*denHe/density);
+  HeEthan_50_50 -> AddMaterial(Ethane, massfraction= 0.5*denEthane/density);
+
+  // P10
+  density = 0.9*denAr + 0.1*denMethane;
+  G4Material* ArCH4_90_10 = new G4Material("ArCH4_90_10",density,ncomponents=2,
+					   kStateGas, expTemp);
+  ArCH4_90_10 -> AddMaterial(Ar, massfraction= 0.9*denAr/density);
+  ArCH4_90_10 -> AddMaterial(Methane, massfraction= 0.1*denMethane/density);
+
+  // ArEthan50-50
+  density = 0.5*denAr + 0.5*denEthane;
+  G4Material* ArEthan_50_50 = new G4Material("ArEthan_50_50",density,ncomponents=2,
+					     kStateGas, expTemp);
+  ArEthan_50_50 -> AddMaterial(Ar, massfraction= 0.5*denAr/density);
+  ArEthan_50_50 -> AddMaterial(Ethane, massfraction= 0.5*denEthane/density);
+
+  // ArEthan80-20
+  density = 0.8*denAr + 0.2*denEthane;
+  G4Material* ArEthan_80_20 = new G4Material("ArEthan_80_20",density,ncomponents=2,
+					     kStateGas, expTemp);
+  ArEthan_80_20 -> AddMaterial(Ar, massfraction= 0.8*denAr/density);
+  ArEthan_80_20 -> AddMaterial(Ethane, massfraction= 0.2*denEthane/density);
+
+  //HeIsobutane80-20
+  density = 0.8*denHe + 0.2*denIsobutane;
+  G4Material* HeIsobutane_80_20 = new G4Material("He_Isobutane_80_20",density,ncomponents=2,
+					     kStateGas, expTemp);
+  HeIsobutane_80_20 -> AddMaterial(HeGas, massfraction= 0.8*denHe/density);
+  HeIsobutane_80_20 -> AddMaterial(Isobutane, massfraction= 0.2*denIsobutane/density);
+
+  //ArIsobutane80-20
+  density = 0.8*denAr + 0.2*denIsobutane;
+  G4Material* ArIsobutane_80_20 = new G4Material("ArIsobutane_80_20",density,ncomponents=2,
+					     kStateGas, expTemp);
+  ArIsobutane_80_20 -> AddMaterial(Ar, massfraction= 0.8*denAr/density);
+  ArIsobutane_80_20 -> AddMaterial(Isobutane, massfraction= 0.2*denIsobutane/density);
+
+  // ArCO2Methan89-10-1
+  density = 0.89*denAr + 0.1*denCO2 + 0.01*denMethane;
+  G4Material* ArCO2Methan_89_10_1 = new G4Material("ArCO2Methan_89_10_1",density,ncomponents=3,
+                                             kStateGas, expTemp);
+  ArCO2Methan_89_10_1 -> AddMaterial(Ar, massfraction= 0.89*denAr/density);
+  ArCO2Methan_89_10_1 -> AddMaterial(CO2, massfraction= 0.1*denCO2/density);
+  ArCO2Methan_89_10_1 -> AddMaterial(Methane, massfraction= 0.01*denMethane/density);
+
+  density = 1.00*g/cm3;
+  G4Material* Water = new G4Material("Water",density,ncomponents=2);
+  Water->AddElement(elH, natoms=2);
+  Water->AddElement(elO, natoms=1);
+
+  density = 0.071*g/cm3; // at 20K
+  G4Material* LH2 = new G4Material("LHydrogen",density,ncomponents=1);
+  LH2->AddElement(elH, natoms=1);
+  G4cout<<"LH2  Cdensity: "<<LH2->GetIonisation()->GetCdensity()<<G4endl;
+  density = 0.168*g/cm3; // at 20K
+  G4Material* LD2 = new G4Material("LDeuterium",density,ncomponents=1);
+  LD2->AddElement(elD, natoms=1);
+
+  density = 0.081*g/cm3;
+  G4Material* LHe3 = new G4Material("LHelium-3",density,ncomponents=1);
+  LHe3->AddElement(elHe3, natoms=1);
+
+  density = 0.145*g/cm3;
+  G4Material* LHe4 = new G4Material("LHelium-4",density,ncomponents=1);
+  LHe4->AddElement(elHe4, natoms=1);
+
+  density = 1.35*g/cm3;
+  G4Material* PET = new G4Material("PET",density,ncomponents=3);
+  PET->AddElement(elC, natoms=5);
+  PET->AddElement(elO, natoms=2);
+  PET->AddElement(elH, natoms=4);
+
+  // Mylar, C5H4O2, Polyetheren terephathlate
+  density = 1.39*g/cm3;
+  G4Material* Mylar = new G4Material("Mylar", density, ncomponents=3);
+  Mylar->AddElement(elC,natoms=5);
+  Mylar->AddElement(elH,natoms=4);
+  Mylar->AddElement(elO,natoms=2);
+  
+  // Kapton, C22H10N2O5, Polymide
+  density = 1.42*g/cm3;
+  G4Material* Kapton = new G4Material("Kapton", density, ncomponents=4);
+  Kapton->AddElement(elC,natoms=22);
+  Kapton->AddElement(elH,natoms=10);
+  Kapton->AddElement(elN,natoms=2);
+  Kapton->AddElement(elO,natoms=5);
+
+ // Polyethylene ((C2H4)n)
+ density = 0.92*g/cm3;
+ G4Material* Polyethylene = new G4Material("Polyethylene", density, ncomponents=2);
+ Polyethylene->AddElement(elC, natoms=2);
+ Polyethylene->AddElement(elH, natoms=4);
+
+// Lucite (Polymethylmethacralate, monomer CH2=C(CH3)C)2CH3) from PDG2002
+  density = 1.18*g/cm3;
+  G4Material* Lucite = new G4Material("Lucite", density, ncomponents=3);
+  Lucite->AddElement(elC,natoms=5);
+  Lucite->AddElement(elH,natoms=8);
+  Lucite->AddElement(elO,natoms=2);
+
+  //concrete from examples/advanced/underground_physics
+  G4Element* Si = new G4Element("Silicon"  , "Si", z= 14., a=28.09  *g/mole);
+  G4Element* O  = new G4Element("Oxygen"   , "O" , z= 8. , a=16.00  *g/mole);
+  G4Element* H  = new G4Element("Hydrogen" , "H" , z= 1. , a=1.00794*g/mole);
+  G4Element* Ca = new G4Element("Calcium"  , "Ca", z= 20., a=40.078 *g/mole);
+  G4Element* Al = new G4Element("Aluminium", "Al", z= 13., a=26.98  *g/mole);  
+  G4Element* Fe = new G4Element("Iron"     , "Fe", z= 26., a=55.85  *g/mole); 
+  G4Material* concrete = new G4Material("Concrete", density=2.3*g/cm3, ncomponents=6);
+  concrete->AddElement(Si, 0.227915);
+  concrete->AddElement(O, 0.60541);
+  concrete->AddElement(H, 0.09972);
+  concrete->AddElement(Ca, 0.04986);
+  concrete->AddElement(Al, 0.014245);
+  concrete->AddElement(Fe, 0.00285);
+
+  density = 2.071*g/cm3;
+  G4Element* Be = new G4Element("Beryllium", "Be", z=  4., a=9.012182 *g/mole);
+  G4Material* AlBeMet = new G4Material("AlBeMet", density, ncomponents=2);
+  AlBeMet->AddElement(Al,0.38);
+  AlBeMet->AddElement(Be,0.62);
+
+// Silica aerogel (SiO2) from paper: 10.1134/S1063779608010085
+// n = 1 + k*rho; k~0.21 [rho]=g/cm3
+  density = 0.2*g/cm3;
+  G4Material* Aerogel = new G4Material("Aerogel", density, ncomponents=2);
+  Aerogel->AddElement(Si,natoms=1);
+  Aerogel->AddElement(elO,natoms=2);
+
+// Polyvinyl chloride (C2H3Cl1)
+  density = 1.4*g/cm3; //https://en.wikipedia.org/wiki/Polyvinyl_chloride
+  G4Material* Polyvinyl = new G4Material("Polyvinyl", density, ncomponents=3);
+  Polyvinyl->AddElement(elC, natoms=2);
+  Polyvinyl->AddElement(elH, natoms=3);
+  Polyvinyl->AddElement(elCl, natoms=1);
+
+}

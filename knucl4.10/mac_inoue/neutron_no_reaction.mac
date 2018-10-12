@@ -1,0 +1,19 @@
+### control/run verbose-level (0-2)
+/control/verbose 2
+/run/verbose 2
+/event/verbose 0
+/tracking/verbose 0
+
+/particle/select neutron
+/particle/process/inactivate 1
+/particle/process/inactivate 2
+/particle/process/inactivate 3
+/particle/process/inactivate 4
+/particle/process/inactivate 5
+#/particle/process/dump
+
+###----------------------------------------------------------###
+### number of beam
+###----------------------------------------------------------###
+/run/beamOn 100000
+

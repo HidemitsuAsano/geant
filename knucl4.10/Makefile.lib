@@ -1,0 +1,14 @@
+ROOTLIBS    = $(shell $(ROOTSYS)/bin/root-config --libs)
+ROOTGLIBS   = $(shell $(ROOTSYS)/bin/root-config --glibs)
+ROOTCFLAGS  = $(shell $(ROOTSYS)/bin/root-config --cflags)
+CPPFLAGS   += $(shell $(ROOTSYS)/bin/root-config --cflags)
+EXTRALIBS  += $(ROOTLIBS)
+CXXFLAGS    = -O -Wall -fPIC
+CXXFLAGS   += $(ROOTCFLAGS)
+
+all: clean  KnuclRootData_cc.so
+
+KnuclRootData_cc.so: KnuclRootDataCint.cc KnuclRootData.cc ComCrossSectionTable.cc
+	     g++ -shared -o$@  $(CXXFLAGS) -I$(ROOTSYS)/include $^
+clean:
+	rm -f *.so

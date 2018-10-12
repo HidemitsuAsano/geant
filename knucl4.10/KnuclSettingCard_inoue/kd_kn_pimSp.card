@@ -1,0 +1,143 @@
+#------------------------------------------#
+Knucl:PhysicsList              QGSP_BERT   # --- Building Physics List
+                                           #   using G4PhysListFactory: (4.10.00) ---
+                                           # "FTFP_BERT","FTFP_BERT_TRV","FTFP_BERT_HP","FTFP_INCLXX",
+                                           # "FTFP_INCLXX_HP","FTF_BIC", "LBE","QBBC",
+                                           # "QGSP_BERT","QGSP_BERT_HP","QGSP_BIC","QGSP_BIC_HP",
+                                           # "QGSP_FTFP_BERT","QGSP_INCLXX","QGSP_INCLXX_HP","QGS_BIC",
+                                           # "Shielding","ShieldingLEND"
+                                           # + "","_EMV","_EMX","_EMY","_EMZ","_LIV","_PEN"
+					   #
+Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
+			       		   # Single / Beam /
+					   # neutron_efficiency_mode /
+					   # K3He / ReadFromFile
+					   # [K3He-mode needs CS-file]
+					   #
+Knucl:CSFileName	       CS/kd_kn.list	   # CS file for K3He-mode
+					   #
+Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
+			       		   # 1: w/  Fermi motion in K3He-mode
+					   #
+Knucl:FermiMotionMode          3	   # 0: Off-Shell method
+			       		   # 1: ON-shell  method
+					   #
+Knucl:TwoStep		       2	   # 0: w/o 2-step reactions
+			       		   # 1: w/  2-step reactions
+					   #
+Knucl:TwoStepMode	       22	   # mode slection @ Knucl:TwoStep
+			       		   #  0: Sigma->Lambda conv. (1N/2N)
+			       		   #  1: YN->YN elastic (1N/2N)
+					   #  2: NN->NN elastic (2N)
+					   #
+Knucl:BeamMomentum           1.000	   # Unit in [GeV/c]
+			     		   #
+Knucl:BindingEnergy           50.0	   # in MeV
+			      		   #
+Knucl:DecayWidth              50.0	   # in MeV
+			      		   #
+Knucl:DecayMode               0		   # decay-mode of K-pp
+			      		   #  0: Lambda+p
+			      		   #  1: Sigma0+p
+					   #  2: (pi+Sigma)0+p
+			      		   #
+Knucl:KppShape                0		   # read K-pp shape from a root-file
+			      		   #  0: No
+					   #  1: Yes
+					   # plese use with K3He & reacID=3000
+					   #
+Knucl:KppShapeFile         KppShape.root   # name of K-pp shape file
+			      		   #
+Knucl:KppShapeHist            his_shape	   # name of K-pp shape histogram
+			      		   # in the KppShapeFile
+			      		   # (K-pp mass spectrum
+					   #                 [unit: GeV/c^2])
+			      		   #
+Knucl:FowardAccept            0		   # forward acceptance selection
+			      		   # for INITAL particles
+					   # <=== NOT for DECAY particles
+					   #  0: no selection
+					   #  1: neutrons in NC acceptance
+#------------------------------------------#
+Single:Particle	             3112	   # particle name
+			     		   # for Single / Beam
+			     		   #
+Single:Momentum_MIN          0.01	   # momentum of the single particle
+Single:Momentum_MAX          1.0	   # unit in [GeV/c]
+			     		   #
+Single:Theta_MIN             0.0	   # theta angle of the single particle
+Single:Theta_MAX             1.0	   # unit in Cosine theta
+			     		   #
+Single:Vertex_MIN    -10.0 -10.0 -30.0	   # 3D vertex pos., unit in [mm]
+Single:Vertex_MAX    10.0 10.0 30.0	   # 3D vertex pos., unit in [mm]
+#------------------------------------------#
+Detector:ConfFileName          conf/Run68/sim.conf
+                                           # detector configuration
+					   #
+Detector:DORAFieldMapFlag      1           # 1=use field map,
+			       		   # 0=DO NOT use field map
+			       		   #
+Detector:USWKFieldMapFlag      1           # 1=use field map,
+			       		   # 0=DO NOT use field map
+					   #
+Detector:FieldInCDC            0.7165      # Unit in [Tesla]
+			      		   # if use field map, the calculated
+					   # value at DORA center will be
+					   # normalized to this value
+					   #
+Detector:FieldInUshiwaka       1.2         # Unit in [Tesla]
+			       		   # only meaningful when set
+					   # USWKFieldMapFlag=0
+					   #
+Detector:ADCThreshold          0.1	   # Unit in [MeV]
+			      		   # If set -1 then first-fit particle
+					   # is filled to counter inf.,
+					   # otherwise first one over th.
+					   # is filled.
+			      		   # [0MeV::nophysics, acceptance-study]
+Detector:ADCThreshold_1        0.6         # [CDH]  Unit in [MeV]
+Detector:ADCThreshold_4        0.2         # [T0]   Unit in [MeV]
+Detector:ADCThreshold_5        0.06        # [DEF]  Unit in [MeV]
+Detector:ADCThreshold_14       0.6         # [CVC]  Unit in [MeV]
+Detector:ADCThreshold_35       0.6         # [PC]   Unit in [MeV]
+Detector:ADCThreshold_32       0.0         # [NC]   Unit in [MeV]
+Detector:ADCThreshold_33       0.2         # [BVC]  Unit in [MeV]
+Detector:ADCThreshold_41       0.1         # [BPD]  Unit in [MeV]
+Detector:ADCThreshold_42       0.06        # [IH]   Unit in [MeV]
+			       		   #
+					   #
+Detector:FWDTrigger		1	   # You can select NC/PC fired events.
+					   #  0: all events
+					   #  1: NC/PC fired events
+#------------------------------------------#
+TargetInfo:TargetLength      120.0         # Unit in [mm]
+			     		   # (only used in primary generator)
+TargetInfo:TargetMaterial    L3He          # L3He / CH2 / C / Vaccum
+#------------------------------------------#
+FileInfo:InputDataFile       test.dat	   #
+FileInfo:OutputRootFile      test_mc.root  #
+FileInfo:FillLevel         	4	   # You can select fill level of final
+					   # tracks.
+					   #  0: CDH/CDC/PC/NC tracks only
+					   #  1: + parent tracks
+					   #  2: + daugther tracks
+					   #  3: + grand-daugther tracks
+					   #  4: + grand-grand-daugther tracks
+#FileInfo:AddCardFile       MY.card	   # If you would like to modify
+			   		   # parameter(s) in this card-file
+					   # partially, please fill an 
+					   # additional card-file and add this
+					   # param.
+					   #
+#FileInfo:OutputDataFile     out.dat	   # output oscar file.
+			    		   # please add this param. if you
+					   # would like to save output data
+#------------------------------------------#
+AnalysisInfo:Seed            random	   # %d (fix) / random
+#------------------------------------------#
+DataInfo:Comment             test          # maxlength str[1024]
+			     		   # *** CAUTION *** Not insert space!
+#------------------------------------------#
+DebugInfo:DebugFlag          false         # maxlength str[1024]
+			     		   # *** CAUTION *** Not insert space!
+#------------------------------------------#

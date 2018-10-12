@@ -1,0 +1,66 @@
+#------------------------------------------#
+Knucl:PhysicsList              QGSP_BERT   # --- Building Physics List
+                                           #   using G4PhysListFactory: (4.10.00) ---
+                                           # "FTFP_BERT","FTFP_BERT_TRV","FTFP_BERT_HP","FTFP_INCLXX",
+                                           # "FTFP_INCLXX_HP","FTF_BIC", "LBE","QBBC",
+                                           # "QGSP_BERT","QGSP_BERT_HP","QGSP_BIC","QGSP_BIC_HP",
+                                           # "QGSP_FTFP_BERT","QGSP_INCLXX","QGSP_INCLXX_HP","QGS_BIC",
+                                           # "Shielding","ShieldingLEND"
+                                           # + "","_EMV","_EMX","_EMY","_EMZ","_LIV","_PEN"
+                                           #
+Knucl:ProcessID                Beam        # --- select reaction mode ---
+                                           # Single / Beam /
+                                           # neutron_efficiency_mode /
+                                           # K3He / ReadFromFile
+                                           # [K3He-mode needs CS-file]
+					   #
+Knucl:BeamMomentum           1.000         # Unit in [GeV/c]
+                                           #
+Single:Particle              2212          # particle name
+                                           # for Single / Beam
+                                           #
+Detector:ConfFileName          conf/Run68/sim_zero.conf
+                                           # detector configuration
+                                           #
+Detector:DORAFieldMapFlag      1           # 1=use field map,
+                                           # 0=DO NOT use field map
+                                           #
+Detector:USWKFieldMapFlag      1           # 1=use field map,
+                                           # 0=DO NOT use field map
+                                           #
+Detector:FieldInCDC            0.7165      # Unit in [Tesla]
+                                           # if use field map, the calculated
+                                           # value at DORA center will be
+                                           # normalized to this value
+                                           #
+Detector:FieldInUshiwaka       1.2         # Unit in [Tesla]
+                                           # only meaningful when set
+                                           # USWKFieldMapFlag=0
+                                           #
+                                           # detector configuration
+Detector:ADCThreshold          0.1         # Unit in [MeV] for All Detector
+                                           # If set -1 then first-fit particle
+                                           # is filled to counter inf.,
+                                           # otherwise first one over th.
+                                           # is filled.
+                                           # [0MeV::nophysics, acceptance-study]
+Detector:ADCThreshold      1   0.6         # [CDH]  Unit in [MeV]
+Detector:ADCThreshold      4   0.2         # [T0]   Unit in [MeV]
+Detector:ADCThreshold      5   0.06        # [DEF]  Unit in [MeV]
+Detector:ADCThreshold     14   0.6         # [CVC]  Unit in [MeV]
+Detector:ADCThreshold     35   0.6         # [PC]   Unit in [MeV]
+Detector:ADCThreshold     32   0.0         # [NC]   Unit in [MeV]
+Detector:ADCThreshold     33   0.2         # [BVC]  Unit in [MeV]
+Detector:ADCThreshold     41   0.1         # [BPD]  Unit in [MeV]
+Detector:ADCThreshold     42   0.06        # [IH]   Unit in [MeV]
+                                           #
+FileInfo:FillLevel              1          # You can select fill level of final
+                                           # tracks.
+                                           #  0: CDH/CDC/PC/NC tracks only
+                                           #  1: + parent tracks
+                                           #  2: + daugther tracks
+                                           #  3: + grand-daugther tracks
+                                           #  4: + grand-grand-daugther tracks
+#------------------------------------------#
+AnalysisInfo:Seed            random        # %d (fix) / random
+#------------------------------------------#

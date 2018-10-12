@@ -1,0 +1,17 @@
+/vis/open VRML2FILE
+
+#/control/verbose 1
+#/vis/scene/create 
+/vis/viewer/set/viewpointThetaPhi 70 20
+
+/vis/drawVolume
+#/vis/viewer/refresh
+
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+#/tracking/storeTrajectory 1
+/vis/viewer/flush
+
+#/run/beamOn 2
+
+

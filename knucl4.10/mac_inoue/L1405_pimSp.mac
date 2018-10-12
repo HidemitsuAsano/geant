@@ -1,0 +1,48 @@
+###----------------------------------------------------------###
+### control/run verbose-level (0-2)
+###----------------------------------------------------------###
+/control/verbose 2
+/run/verbose 2
+
+###----------------------------------------------------------###
+### set cut range (default:0.7mm)
+###  for EM processes & proton prodcution
+###----------------------------------------------------------###
+#/run/setCut 10 mm
+
+###----------------------------------------------------------###
+### *** OPTION ****
+### aplly range-cut to photo-electro, compton, g-conversion
+### processes
+###  (i.e., low energy gamma/e-/e+ are suppressed)
+###----------------------------------------------------------###
+#/run/particle/applyCuts
+
+###----------------------------------------------------------###
+### event verbose-level (0-2)
+###----------------------------------------------------------###
+/event/verbose 0
+
+###----------------------------------------------------------###
+### tracking verbose-level (0-5)
+###----------------------------------------------------------###
+/tracking/verbose 0
+
+###----------------------------------------------------------###
+### change decay-mode
+###----------------------------------------------------------###
+/particle/select lambda(1405)
+/particle/property/decay/select 0
+/particle/property/decay/br 1.0
+/particle/property/decay/select 1
+/particle/property/decay/br 0.0
+/particle/property/decay/select 2
+/particle/property/decay/br 0.0
+/particle/property/decay/select 3
+/particle/property/decay/br 0.0
+
+###----------------------------------------------------------###
+### number of beam
+###----------------------------------------------------------###
+/run/beamOn 100000
+

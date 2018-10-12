@@ -1,0 +1,98 @@
+#------------------------------------------#
+Knucl:PhysicsList              QGSP_BERT   # --- Building Physics List
+                                           #   using G4PhysListFactory: (4.10.00) ---
+                                           # "FTFP_BERT","FTFP_BERT_TRV","FTFP_BERT_HP","FTFP_INCLXX",
+                                           # "FTFP_INCLXX_HP","FTF_BIC", "LBE","QBBC",
+                                           # "QGSP_BERT","QGSP_BERT_HP","QGSP_BIC","QGSP_BIC_HP",
+                                           # "QGSP_FTFP_BERT","QGSP_INCLXX","QGSP_INCLXX_HP","QGS_BIC",
+                                           # "Shielding","ShieldingLEND"
+                                           # + "","_EMV","_EMX","_EMY","_EMZ","_LIV","_PEN"
+					   #
+Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
+			       		   # Single / Beam /
+					   # neutron_efficiency_mode /
+					   # K3He / ReadFromFile
+					   # [K3He-mode needs CS-file]
+					   #
+Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
+			       		   # 1: w/  Fermi motion in K3He-mode
+					   #
+Knucl:FermiMotionMode          1	   # 0: Off-Shell method
+			       		   # 1: ON-shell  method
+					   #
+Knucl:TwoStep		       0	   # 0: w/o 2-step reactions
+			       		   # 1: w/  2-step reactions
+					   #
+					   #
+Knucl:CSFileName       CS/kd_kp.list      # CS file for K3He-mode
+                                           #
+Knucl:BeamMomentum           1.000	   # Unit in [GeV/c]
+			     		   #
+Knucl:KppShape                0		   # read K-pp shape from a root-file
+			      		   #  0: No
+					   #  1: Yes
+					   # plese use with K3He & reacID=3000
+					   #
+Knucl:FowardAccept            0		   # forward acceptance selection
+			      		   # for INITAL particles
+					   # <=== NOT for DECAY particles
+					   #  0: no selection
+					   #  1: neutrons in NC acceptance
+#------------------------------------------#
+Detector:ConfFileName          conf/Run68/sim.conf
+                                           # detector configuration
+					   #
+Detector:DORAFieldMapFlag      1           # 1=use field map,
+			       		   # 0=DO NOT use field map
+			       		   #
+Detector:USWKFieldMapFlag      1           # 1=use field map,
+			       		   # 0=DO NOT use field map
+					   #
+Detector:FieldInCDC            0.7165      # Unit in [Tesla]
+			      		   # if use field map, the calculated
+					   # value at DORA center will be
+					   # normalized to this value
+					   #
+Detector:FieldInUshiwaka       1.2         # Unit in [Tesla]
+			       		   # only meaningful when set
+					   # USWKFieldMapFlag=0
+					   #
+Detector:ADCThreshold          0.1	   # Unit in [MeV]
+			      		   # If set -1 then first-fit particle
+					   # is filled to counter inf.,
+					   # otherwise first one over th.
+					   # is filled.
+			      		   # [0MeV::nophysics, acceptance-study]
+Detector:ADCThreshold      1   0.6         # [CDH]  Unit in [MeV]
+Detector:ADCThreshold      4   0.2         # [T0]   Unit in [MeV]
+Detector:ADCThreshold      5   0.06        # [DEF]  Unit in [MeV]
+Detector:ADCThreshold     14   0.6         # [CVC]  Unit in [MeV]
+Detector:ADCThreshold     35   0.6         # [PC]   Unit in [MeV]
+Detector:ADCThreshold     32   0.0         # [NC]   Unit in [MeV]
+Detector:ADCThreshold     33   0.2         # [BVC]  Unit in [MeV]
+Detector:ADCThreshold     41   0.1         # [BPD]  Unit in [MeV]
+Detector:ADCThreshold     42   0.06        # [IH]   Unit in [MeV]
+                                           #
+Detector:FWDTrigger		1	   # You can select NC/PC fired events.
+					   #  0: all events
+					   #  1: NC/PC fired events
+#------------------------------------------#
+TargetInfo:TargetLength      300.0         # Unit in [mm]
+			     		   # (only used in primary generator)
+#------------------------------------------#
+FileInfo:FillLevel         	1	   # You can select fill level of final
+					   # tracks.
+					   #  0: CDH/CDC/PC/NC tracks only
+					   #  1: + parent tracks
+					   #  2: + daugther tracks
+					   #  3: + grand-daugther tracks
+					   #  4: + grand-grand-daugther tracks
+#------------------------------------------#
+AnalysisInfo:Seed            random	   # %d (fix) / random
+#------------------------------------------#
+DataInfo:Comment             test          # maxlength str[1024]
+			     		   # *** CAUTION *** Not insert space!
+#------------------------------------------#
+DebugInfo:DebugFlag          false         # maxlength str[1024]
+			     		   # *** CAUTION *** Not insert space!
+#------------------------------------------#

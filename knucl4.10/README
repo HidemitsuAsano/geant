@@ -1,0 +1,54 @@
+################################
+### knucl4.10 (GEANT4.10.00) ###
+################################
+----------------------------
+--- 2013 Dec. [F.Sakuma] ---
+----------------------------
+
+Detector simulation for the E15 experiment.
+
+ - README	    	       this file
+ - knucl.cc		       main file
+ - src/			       source files
+ - include/		       include files
+
+ - CMakeLists.txt	       for cmake
+ - Makefile.lib		       for Class library
+
+ - KnuclSetting.card	       card-input file
+ - CS.list		       cross-section list for K3He mode
+ - KppShape.root	       (sample) K-pp shape file
+ - Magnet_Field_Doraemon_3.txt field map of the solenoid magnet
+ - ushiwaka_field_map.txt      field map of the sweeping magnet
+ - osc.dat		       (sample) oscar input file
+
+ - run.mac		       w/ physics
+ - nophys.mac		       w/o physics
+ - dump.mac		       event-dump
+ - vis.mac		       visualization using OGLIX
+ - vis_Qt.mac		       visualization using QT
+ - vrlm.mac		       visualization using VRLM
+
+ - .rootlogon.C		       config. file for ROOT
+ - pdg_table.txt	       PDG table for ROOT
+ - K3He.C		       (sample) macro for quick analysis
+
+* Parameter files of k18ana (k18ana/conf & k18ana/param/) are required
+  [KnuclSetting.card].
+
+* please see/use resouce file paths:
+  /w/e15/common/GEANT/geant4.10.00_install/bin/geant4.csh(.sh)
+
+* how to compile knucl4.10
+ > mkdir build
+ > cd build
+ > cmake -DGeant4_DIR=/w/e15/common/GEANT/geant4.10.00_install/lib64/Geant4-10.0.0/ ../
+ > make
+
+* If you would like to swich off a lot of warnings caused by conflicts of
+  GEANT4/ROOT libraries, plese remove "-Wshadow" option in 
+  build/CMakeFiles/knucl.dir/flags.make
+
+* how to make Class library for ROOT (KnuclRootData_cc.so)
+ > cd build
+ > make -f Makefile.lib

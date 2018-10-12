@@ -1,0 +1,115 @@
+##----------------------------------------------------------###
+### control/run verbose-level (0-2)
+###----------------------------------------------------------###
+/control/verbose 2
+/run/verbose 2
+
+###----------------------------------------------------------###
+### set cut range (default:0.7mm)
+###  for EM processes & proton prodcution
+###----------------------------------------------------------###
+#/run/setCut 10 mm
+
+###----------------------------------------------------------###
+### *** OPTION ****
+### aplly range-cut to photo-electro, compton, g-conversion
+### processes
+###  (i.e., low energy gamma/e-/e+ are suppressed)
+###----------------------------------------------------------###
+#/run/particle/applyCuts
+
+###----------------------------------------------------------###
+### event verbose-level (0-2)
+###----------------------------------------------------------###
+/event/verbose 0
+
+###----------------------------------------------------------###
+### tracking verbose-level (0-5)
+###----------------------------------------------------------###
+/tracking/verbose 0
+
+#------------------------------------#
+# eliminate the ionization
+# [delta-ray & Landau fluctuations]
+#------------------------------------#
+#/run/setCut 1 km
+/process/eLoss/fluct false
+
+#------------------------------------#
+# switch off all interactions
+#------------------------------------#
+#/process/inactivate msc
+#/process/inactivate Decay
+#/process/inactivate eIoni
+#/process/inactivate hIoni
+#/process/inactivate ionIoni
+#/process/inactivate muIoni
+/process/inactivate hBrems
+/process/inactivate hPairProd
+/process/inactivate CoulombScat
+/process/inactivate eBrem
+/process/inactivate annihil
+/process/inactivate phot
+/process/inactivate compt
+/process/inactivate conv
+/process/inactivate muBrems
+/process/inactivate muPairProd
+/process/inactivate photonNuclear
+/process/inactivate electronNuclear
+/process/inactivate positronNuclear
+/process/inactivate muonNuclear
+/process/inactivate hadElastic
+/process/inactivate neutronInelastic
+/process/inactivate nCapture
+/process/inactivate protonInelastic
+/process/inactivate pi+Inelastic
+/process/inactivate pi-Inelastic
+/process/inactivate kaon+Inelastic
+/process/inactivate kaon-Inelastic
+/process/inactivate kaon0LInelastic
+/process/inactivate kaon0SInelastic
+/process/inactivate lambdaInelastic
+/process/inactivate anti-lambdaInelastic
+/process/inactivate sigma-Inelastic
+/process/inactivate anti_sigma-Inelastic
+/process/inactivate sigma+Inelastic
+/process/inactivate anti_sigma+Inelastic
+/process/inactivate xi-Inelastic
+/process/inactivate anti_xi-Inelastic
+/process/inactivate xi0Inelastic
+/process/inactivate anti_xi0Inelastic
+/process/inactivate omega-Inelastic
+/process/inactivate anti_omega-Inelastic
+/process/inactivate anti_protonInelastic
+/process/inactivate anti_neutronInelastic
+/process/inactivate anti_deuteronInelastic
+/process/inactivate anti_tritonInelastic
+/process/inactivate anti_He3Inelastic
+/process/inactivate anti_alphaInelastic
+/process/inactivate hFritiofCaptureAtRest
+/process/inactivate hBertiniCaptureAtRest
+/process/inactivate muMinusCaptureAtRest
+/process/inactivate dInelastic
+/process/inactivate tInelastic
+/process/inactivate He3Inelastic
+/process/inactivate alphaInelastic
+/process/inactivate ionInelastic
+/process/inactivate nKiller
+
+###----------------------------------------------------------###
+### change decay-mode
+###----------------------------------------------------------###
+/particle/select sigma(1385)-
+/particle/property/decay/select 0
+/particle/property/decay/br 0.0
+/particle/property/decay/select 1
+/particle/property/decay/br 1.0
+/particle/property/decay/select 2
+/particle/property/decay/br 0.0
+
+###----------------------------------------------------------###
+### number of beam
+###----------------------------------------------------------###
+/run/beamOn 100000
+#/run/beamOn 10000
+#/run/beamOn 1000

@@ -1,0 +1,101 @@
+###----------------------------------------------------------###
+### control/run verbose-level (0-2)
+###----------------------------------------------------------###
+/control/verbose 2
+/run/verbose 2
+
+#------------------------------------#
+# switch off the multiple scattering
+#------------------------------------#
+/process/inactivate msc
+
+#// NOTE ::
+#//  It is impossible to switch off only the ionization.
+#//  Switching off the ionization is required to switch off
+#//  the multiple scattering.
+#------------------------------------#
+# eliminate the ionization
+# [delta-ray & Landau fluctuations]
+#------------------------------------#
+/run/setCut 1 cm
+/process/eLoss/fluct false
+#------------------------------------#
+# switch off the hadron ionization
+#------------------------------------#
+/process/inactivate hIoni
+
+#------------------------------------#
+# switch off all interactions // added on 2011/08/16
+#------------------------------------#
+/process/inactivate Decay
+/process/inactivate phot
+/process/inactivate compt              
+/process/inactivate conv
+/process/inactivate eIoni
+/process/inactivate eBrem              
+/process/inactivate annihil
+/process/inactivate muIoni
+/process/inactivate muBrems
+/process/inactivate muPairProd
+/process/inactivate muMinusCaptureAtRest
+/process/inactivate hIoni
+/process/inactivate HadronElastic
+/process/inactivate PionPlusInelastic
+/process/inactivate PionMinusInelastic
+/process/inactivate KaonPlusInelastic
+/process/inactivate KaonMinusInelastic
+/process/inactivate KaonZeroLInelastic
+/process/inactivate KaonZeroSInelastic
+/process/inactivate ProtonInelastic
+/process/inactivate AntiProtonInelastic
+/process/inactivate AntiProtonAnnihilationAtRest
+/process/inactivate NeutronInelastic
+/process/inactivate HadronFission
+/process/inactivate HadronCapture
+/process/inactivate AntiNeutronInelastic
+/process/inactivate AntiNeutronAnnihilationAtRest
+/process/inactivate LambdaInelastic
+/process/inactivate AntiLambdaInelastic
+/process/inactivate SigmaMinusInelastic
+/process/inactivate AntiSigmaMinusInelastic
+/process/inactivate SigmaPlusInelastic
+/process/inactivate AntiSigmaPlusInelastic
+/process/inactivate XiMinusInelastic   
+/process/inactivate AntiXiMinusInelastic
+/process/inactivate XiZeroInelastic
+/process/inactivate AntiXiZeroInelastic
+/process/inactivate OmegaMinusInelastic
+/process/inactivate AntiOmegaMinusInelastic
+/process/inactivate ionIoni
+/process/inactivate DeuteronInelastic
+/process/inactivate TritonInelastic    
+/process/inactivate AlphaInelastic     
+
+###----------------------------------------------------------###
+### set cut range (default:0.7mm) 
+###  for EM processes & proton prodcution
+###----------------------------------------------------------###
+#/run/setCut 10 mm
+
+###----------------------------------------------------------###
+### *** OPTION ****
+### aplly range-cut to photo-electro, compton, g-conversion
+### processes
+###  (i.e., low energy gamma/e-/e+ are suppressed)
+###----------------------------------------------------------###
+#/run/particle/applyCuts
+
+###----------------------------------------------------------###
+### event verbose-level (0-2)
+###----------------------------------------------------------###
+#/event/verbose 0
+
+###----------------------------------------------------------###
+### tracking verbose-level (0-5) 
+###----------------------------------------------------------###
+#/tracking/verbose 0
+
+###----------------------------------------------------------###
+### number of beam
+###----------------------------------------------------------###
+/run/beamOn 1000
