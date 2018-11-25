@@ -31,7 +31,7 @@ while ($i < 100)
   set jobnum=`printf  "%03d"  $i`
 
   #set INPFILE=${DATADIR}"run78_0${jobnum}.dat"
-  set OUTFILE=${OUTDIRSUB}"/sim_0${jobnum}.root"
+  set OUTFILE=${OUTDIRSUB}"/sim_kdSm_0${jobnum}.root"
   #set CDSFILE=${KWSKDIR}"run78_0${jobnum}_evtracking.root"
 
   #echo ${INPFILE}

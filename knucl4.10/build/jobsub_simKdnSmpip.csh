@@ -22,7 +22,7 @@ endif
 #cp $SRCDIR/EventAnalysisIMPiSigma.cpp $OUTDIRSUB/
 
 @ i = 0
-while ($i < 100)   
+while ($i < 400)   
 
   set EXEC___="./knucl"
   set CONF___="conf/Run78/analyzer_kwsk_sim.conf"
