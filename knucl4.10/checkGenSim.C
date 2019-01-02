@@ -81,7 +81,8 @@ void checkGenSim(const char *filename="sim1/test.root")
   if(gSystem->Load("./build/KnuclRootData_cc.so")!=0) return; //<-- OR read from ./.rootlogon.C
   
   gROOT->SetStyle("Plain");
-  gStyle->SetOptStat(111111);
+  //gStyle->SetOptStat(111111);
+  gStyle->SetOptStat(0);
   gStyle->SetOptFit(111111);
   
   gROOT->cd();
@@ -182,7 +183,8 @@ void checkGenSim(const char *filename="sim1/test.root")
   TH1F* his99  = new TH1F("his99", "reactionID", 1120, 0, 1120);
   TH1F* his100 = new TH1F("his100", "reactionID", 1120, 0, 1120);
   TH1F* his101 = new TH1F("his101", "reactionID", 1120, 0, 1120);
-  TH2F* hisd   = new TH2F("hisd", "Dalitz's plot", 44, -0.65, 0.65, 44, -0.05, 1.05);
+  //TH2F* hisd   = new TH2F("hisd", "Dalitz's plot", 44, -0.65, 0.65, 44, -0.05, 1.05);
+  TH2F* hisd   = new TH2F("hisd", "Phase Space", 100,1,2,200,0,2);
   TH2F* his_ipi = new TH2F("his_ipi", "initial pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_S   = new TH2F("his_S", "#Sigma momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_pi  = new TH2F("his_pi", "pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
@@ -196,12 +198,17 @@ void checkGenSim(const char *filename="sim1/test.root")
   //--- event roop start ---//
   //------------------------//
   cout<<"Start to fill histgrams. Entries = "<<nevent<<endl;
+  bool isstate=false;
   for (Int_t i=0; i<nevent; i++) {
     tree->GetEvent(i);
     // print information
     int ndecay    = reactionData->NParticle(0);
     int nspec     = reactionData->NParticle(1);
     int nparticle = ndecay+nspec;
+    if(!isstate){
+      std::cout << "nparticle:" << nparticle << std::endl;
+      isstate=true;
+    }
     if( i==0 ){
       for (Int_t j=0; j<2; j++) {
 	initname[j] = pdg->GetParticle(reactionData->InitPDG(j))->GetName(); 
@@ -289,6 +296,7 @@ void checkGenSim(const char *filename="sim1/test.root")
     }
 
 #if DALITZ
+    /* original 
     // Dalitz's plot
     double T[3];
     for(int j=0; j<nparticle; j++){
@@ -301,6 +309,29 @@ void checkGenSim(const char *filename="sim1/test.root")
     double x = (T[1]-T[0])/(sqrt(3)*Q);
     double y = T[2]/Q;
     hisd->Fill(x,y);
+    */
+    // Dalitz's plot
+    double T[3];
+    TLorentzVector TL_piSigma;
+    TLorentzVector TL_nmiss;
+    /*
+    for(int j=0; j<nparticle; j++){
+      double ene = reactionData->GetCMParticle(j).E();
+      double mass = pdg->GetParticle(reactionData->PDG(j))->Mass();
+      //TVector3 mom = reactionData->GetCMParticle(j).P();
+      mass *= 1000;
+    }*/
+    TL_piSigma = reactionData->GetCMParticle(1)+reactionData->GetCMParticle(2);
+    TL_nmiss = reactionData->GetCMParticle(0);
+    TLorentzVector TL_beam(0,0,1000, sqrt(493.677**2+1000**2));
+    double q = (TL_beam.Vect()-TL_nmiss.Vect()).Mag();
+    //TLorentzVector TL_sum = TL_gene[0]+TL_gene[1]+TL_gene[2];
+    //double Q = T[0]+T[1]+T[2];
+    //double x = (T[1]-T[0])/(sqrt(3)*Q);
+    //double y = T[2]/Q;
+    double mass = TL_piSigma.M();
+    //std::cout << mass << " " << q << std::endl;
+    hisd->Fill(mass/1000.,q/1000.);
 #endif
   }// for (Int_t i=0;i<nevent;i++) {
   cout<<"end of filling"<<endl;
@@ -322,7 +353,8 @@ void checkGenSim(const char *filename="sim1/test.root")
 
 
   //--- plot ---//
-  gStyle->SetOptStat(111111);
+  //gStyle->SetOptStat(111111);
+  gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
 
   TLatex *tex;
@@ -359,6 +391,7 @@ void checkGenSim(const char *filename="sim1/test.root")
   //c1->Print("tmp1.png");
 
   //### plot Fermi Momentum
+  FermiFlag = 1;
   if( FermiFlag ){
     TCanvas *c2 = new TCanvas("c2", "", 800, 400);
     c2->Divide(2,1);
@@ -370,8 +403,8 @@ void checkGenSim(const char *filename="sim1/test.root")
       tex->SetTextColor(4);
       tex->SetTextSize(0.1);
       tex->Draw();
-      //his00[i]->Draw("same"); his00[i]->SetLineColor(2);
-      //his01[i]->Draw("same"); his01[i]->SetLineColor(4);
+      his00[i]->Draw("same"); his00[i]->SetLineColor(2);
+      his01[i]->Draw("same"); his01[i]->SetLineColor(4);
     }
     //c2->Print("tmp2.pdf");
     //c2->Print("tmp2.png");
@@ -420,11 +453,15 @@ void checkGenSim(const char *filename="sim1/test.root")
   TLine* line3 = new TLine(1/sqrt(3), 0, 0, 1);
   line3->SetLineColor(4);
 
-  TCanvas *c5 = new TCanvas("c5", "", 500, 500);
-  hisd->Draw("box");
-  hisd->SetXTitle("(T_{decay2}-T_{decay1})/#sqrt{3}Q");
-  hisd->SetYTitle("T_{deuteron}/Q");
-  line1->Draw(); line2->Draw(); line3->Draw();
+  TCanvas *c5 = new TCanvas("c5", "");
+  hisd->SetXTitle("IM(#pi#Sigma) [GeV/c^{2}]");
+  hisd->SetYTitle("mom. transfer [GeV/c]");
+  hisd->GetXaxis()->CenterTitle();
+  hisd->GetYaxis()->CenterTitle();
+  hisd->Draw("colz");
+  //hisd->SetXTitle("(T_{decay2}-T_{decay1})/#sqrt{3}Q");
+  //hisd->SetYTitle("T_{deuteron}/Q");
+  //line1->Draw(); line2->Draw(); line3->Draw();
   //c5->Print("tmp5.pdf");
   //c5->Print("tmp5.png");
 #endif
