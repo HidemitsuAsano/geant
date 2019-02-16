@@ -1,6 +1,3 @@
-#include <fstream.h>
-#include <iostream.h>
-
 #define DALITZ 1
 
 class RunHeader;
@@ -76,8 +73,12 @@ enum gCounterID { CID_CDC     = 0,
                   CID_LS      = 150
 };
 
-void checkGenSim(const char *filename="sim1/test.root")
+void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
 {
+  std::string outname = std::string(filename);
+  outname.insert(std::string(filename).size()-5,"_hist");
+  std::cout << outname << std::endl;
+
   if(gSystem->Load("./build/KnuclRootData_cc.so")!=0) return; //<-- OR read from ./.rootlogon.C
   
   gROOT->SetStyle("Plain");
@@ -91,6 +92,7 @@ void checkGenSim(const char *filename="sim1/test.root")
   pdg->ReadPDGTable("pdg_table.txt");
   
   TFile *f = new TFile(filename);
+  if(!f) return;
   TTree *tree = (TTree*)f->Get("tree");
   TTree *tree2 = (TTree*)f->Get("tree2");
 
@@ -184,7 +186,8 @@ void checkGenSim(const char *filename="sim1/test.root")
   TH1F* his100 = new TH1F("his100", "reactionID", 1120, 0, 1120);
   TH1F* his101 = new TH1F("his101", "reactionID", 1120, 0, 1120);
   //TH2F* hisd   = new TH2F("hisd", "Dalitz's plot", 44, -0.65, 0.65, 44, -0.05, 1.05);
-  TH2F* hisd   = new TH2F("hisd", "Phase Space", 100,1,2,200,0,2);
+  TH2F* hiss   = new TH2F("hiss", "Phase Space IM{Sigma}", 500,1,2,300,0,1.5);
+  TH2F* hisd   = new TH2F("hisd", "Phase Space IM{Sigma pi}", 500,1,2,300,0,1.5);
   TH2F* his_ipi = new TH2F("his_ipi", "initial pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_S   = new TH2F("his_S", "#Sigma momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_pi  = new TH2F("his_pi", "pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
@@ -321,9 +324,16 @@ void checkGenSim(const char *filename="sim1/test.root")
       //TVector3 mom = reactionData->GetCMParticle(j).P();
       mass *= 1000;
     }*/
-    TL_piSigma = reactionData->GetCMParticle(1)+reactionData->GetCMParticle(2);
-    TL_nmiss = reactionData->GetCMParticle(0);
-    TLorentzVector TL_beam(0,0,1000, sqrt(493.677**2+1000**2));
+    //1: sigma ,2 :pion 3 neutron
+    TLorentzVector TL_Sigma;
+    TL_Sigma = reactionData->GetParticle(1);
+    TL_piSigma = TL_Sigma+reactionData->GetParticle(2);
+    TL_nmiss = reactionData->GetParticle(0);
+    //std::cout << TL_nmiss.M() << std::endl;
+    //std::cout << reactionData->GetCMParticle(1).M()<<std::endl;
+    TLorentzVector TL_beam;
+    TVector3 beammom(0,0,1000);
+    TL_beam.SetVectM(beammom, 493);
     double q = (TL_beam.Vect()-TL_nmiss.Vect()).Mag();
     //TLorentzVector TL_sum = TL_gene[0]+TL_gene[1]+TL_gene[2];
     //double Q = T[0]+T[1]+T[2];
@@ -331,6 +341,7 @@ void checkGenSim(const char *filename="sim1/test.root")
     //double y = T[2]/Q;
     double mass = TL_piSigma.M();
     //std::cout << mass << " " << q << std::endl;
+    hiss->Fill(TL_Sigma.M()/1000.,q/1000.);
     hisd->Fill(mass/1000.,q/1000.);
 #endif
   }// for (Int_t i=0;i<nevent;i++) {
@@ -499,6 +510,12 @@ void checkGenSim(const char *filename="sim1/test.root")
     //his40[i]->Draw("same"); his40[i]->SetLineColor(2);
     //his41[i]->Draw("same"); his41[i]->SetLineColor(4);
   }
+  TFile *fout = new TFile(outname.c_str(),"RECREATE");
+  fout->cd();
+  hiss->Write();
+  hisd->Write();
+  fout->Close();
+  return;
   //c7->Print("tmp7.pdf");
   //c7->Print("tmp7.png");
 }
