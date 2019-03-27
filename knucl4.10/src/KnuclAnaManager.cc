@@ -1,5 +1,5 @@
-//Asano memo
-//
+// Asano memo
+// This code hundle analysis parameters from KnuclSetting.card
 
 #include "G4Version.hh"
 #include "G4ParticleTable.hh"

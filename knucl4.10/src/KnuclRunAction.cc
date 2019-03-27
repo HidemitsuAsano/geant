@@ -21,7 +21,7 @@
 // ********************************************************************
 //
 //
-// $Id: KnuclRunAction.cc,v 1.2 2017/10/23 08:21:57 inoue Exp $
+// $Id: KnuclRunAction.cc,v 1.3 2019/03/20 21:45:40 asano Exp $
 // GEANT4 tag $Name:  $
 // 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -66,12 +66,18 @@ void KnuclRunAction::BeginOfRunAction(const G4Run* aRun)
 #endif
 
   long seed;
-  if(anaManager->GetSeed()=="random")
+  if(anaManager->GetSeed()=="random"){
     seed=long((double)rand()/((double)RAND_MAX+1)*10000);
-  else
+    anaManager->SetSeedNum(seed);
+  }else if(anaManager->GetSeed()=="external"){
+    std::cout << "seed is given from the argument of knucl" << std::endl;
+    seed =  anaManager->GetSeedNum();
+    if(seed<0) std::cerr <<  "seed must be >= 0 !!!" << std::endl;
+    std::cout << seed << std::endl;
+  }else{
     seed=atoi(anaManager->GetSeed().Data());
-  anaManager->SetSeedNum(seed);
-
+    anaManager->SetSeedNum(seed);
+  }
   CLHEP::HepRandom::setTheEngine(new CLHEP::MTwistEngine(seed));
   CLHEP::HepRandom::showEngineStatus();
 

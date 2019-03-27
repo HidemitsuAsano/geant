@@ -589,7 +589,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //--- Fermi motion ---//
   //--------------------//
   //asano memo
-  //usually taking into account Fermi motion
+  //if taking into account Fermi motion (not necesarry ?)
   else if( FermiFlag ){
     if( FermiMode ){
       //==============================//
@@ -988,7 +988,42 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
       return false;
     }
     ran = WeightMAX*G4UniformRand();
-    if( ran<weight ) break;
+    //const double piSmass_min = 1.32894;//
+    //const double piSmass_max = 1.92;
+    //const double q_min = 0.0;
+    //const double q_max = 1.5;
+    //double mass_th = piSmass_min + (piSmass_max - piSmass_min)*G4UniformRand();
+    /*
+    std::cout << std::endl;
+    std::cout << "weight " << weight << std::endl;
+    std::cout << "ran    " << ran << std::endl;
+    std::cout << "mass0 " << mass[0] << std::endl;
+    std::cout << "mass1 " << mass[1] << std::endl;
+    std::cout << "mass2 " << mass[2] << std::endl;
+    */
+    G4ThreeVector vec_n = ConvVecTG( gen->GetDecay(0)->Vect() ); 
+    //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
+    //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
+    G4LorentzVector lvec0;//,lvec1,lvec2;
+    lvec0.setVectM(vec_n,mass[0]);//neutron
+    //lvec1.setVectM(vec[1],mass[1]);//Sigma
+    //lvec2.setVectM(vec[2],mass[2]);//pio
+    //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
+    //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
+    //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
+    //G4LorentzVector TL_piSigma = lvec1+lvec2;
+    //G4ThreeVector beammom(0,0,1000.);
+    //G4LorentzVector TL_beam;
+    //TL_beam.setVectM(beammom,493.);
+    //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
+    //double piSmass = TL_piSigma.m()/1000.;
+    //std::cout << "piSigma "  << piSmass <<  std::endl; 
+    //std::cout << "q       "  << q <<  std::endl; */
+    double cosn= lvec0.cosTheta();
+    if( ran<weight && (0<=cosn) && (cosn<1) ){
+      //std::cout << "break" << std::endl;
+      break;
+    }
     //break; // for debug
   }
   //if ( weightMAX<weight ){ weightMAX = weight; std::cout<<weightMAX<<std::endl; }
