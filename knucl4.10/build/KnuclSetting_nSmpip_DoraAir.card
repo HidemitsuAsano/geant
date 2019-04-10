@@ -134,7 +134,8 @@ FileInfo:FillLevel         	4	   # You can select fill level of final
 			    		   # please add this param. if you
 					   # would like to save output data
 #------------------------------------------#
-AnalysisInfo:Seed            random	   # %d (fix) / random
+#AnalysisInfo:Seed            random	   # %d (fix) / random
+AnalysisInfo:Seed            external	   # 
 #------------------------------------------#
 DataInfo:Comment             test          # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
