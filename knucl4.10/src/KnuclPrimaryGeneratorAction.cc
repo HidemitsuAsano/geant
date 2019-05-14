@@ -957,7 +957,8 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
 					   const G4double* mass, G4ThreeVector*vec)
 //////////////////////////////////////////////////////
 {
-  G4int total_mass = 0;
+  //G4int total_mass = 0;
+  G4double total_mass = 0;
   for( int i=0; i<nBody; i++ ){
     total_mass += mass[i];
   }
@@ -1002,25 +1003,29 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
     std::cout << "mass2 " << mass[2] << std::endl;
     */
     G4ThreeVector vec_n = ConvVecTG( gen->GetDecay(0)->Vect() ); 
+    G4ThreeVector vec_S = ConvVecTG( gen->GetDecay(1)->Vect() ); 
+    G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
     //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
     //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    G4LorentzVector lvec0;//,lvec1,lvec2;
+    G4LorentzVector lvec0,lvec1,lvec2;
     lvec0.setVectM(vec_n,mass[0]);//neutron
-    //lvec1.setVectM(vec[1],mass[1]);//Sigma
-    //lvec2.setVectM(vec[2],mass[2]);//pio
+    lvec1.setVectM(vec_S,mass[1]);//Sigma
+    lvec2.setVectM(vec_pi,mass[2]);//pion
     //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
     //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
     //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
-    //G4LorentzVector TL_piSigma = lvec1+lvec2;
+    G4LorentzVector TL_piSigma = lvec1+lvec2;
     //G4ThreeVector beammom(0,0,1000.);
     //G4LorentzVector TL_beam;
     //TL_beam.setVectM(beammom,493.);
     //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
-    //double piSmass = TL_piSigma.m()/1000.;
+    double piSmass = TL_piSigma.m()/1000.;
     //std::cout << "piSigma "  << piSmass <<  std::endl; 
-    //std::cout << "q       "  << q <<  std::endl; */
+    //std::cout << "q       "  << q <<  std::endl; 
     double cosn= lvec0.cosTheta();
-    if( ran<weight && (0<=cosn) && (cosn<1) ){
+    //std::cout << "cosn" << cosn << std::endl;
+   // if( ran<weight && (((0.85<cosn) && (cosn<=1)) || (piSmass<1.40)) ){
+    if( ran<weight) {
       //std::cout << "break" << std::endl;
       break;
     }
