@@ -96,7 +96,10 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
     PrintAllCS();
     ana->SetCSTable(*csTable);
   }
-  
+  TFile *genfile = new TFile("probSp.root","READ");
+  h2genprob = (TH2D*) genfile->Get("h2prob");
+  h2genprob->Print();
+  //gErrorIgnoreLevel = 5000;
   // fermi motion with 
   std::string str = "([0]*exp(-x*x/([1]*[1]))+[2]*exp(-x*x/([3]*[3]))+[4]*exp(-x*x/([5]*[5])))*x*x";
   const char* fun = str.c_str();
@@ -577,7 +580,6 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //-------------------------------------//
   //
   //asano memo:
-  //usually not necessart for E31 ?
   if( anaManager->GetKppShape() && cs.Id()==3000 ){ // NO spectators
     if( !ManyBody(CMmass, nBody, mass, vec) ) goto START;    
     double P0 = vec[0].mag();
@@ -864,6 +866,35 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     }
   } // if( anaManager->GetFowardAccept() ){
   //std::cerr<<"num of loop = "<<counter<<std::endl;
+  
+  //---------------------------------------------------//
+  //uniform distribution for 3-body 
+  //---------------------------------------------------//
+  G4LorentzVector lvec[3];
+  for(int i=0;i<3;i++){
+    lvec[i].setVectM(vec[i], mass[i]);
+    lvec[i].boost(boost);
+  }
+  //0: missing neutron
+  //1: S
+  //2: pi
+  G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
+  G4ThreeVector beammom(0,0,1000.);
+  G4LorentzVector TL_beam;
+  TL_beam.setVectM(beammom,493.);
+  double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;
+  double piSmass = TL_piSigma.m()/1000.;
+  //std::cout << "nmiss "  << lvec0.m() <<  std::endl; 
+  //std::cout << "Sigma "  << lvec1.m() <<  std::endl; 
+  //std::cout << "piSigma "  << piSmass <<  std::endl; 
+  //std::cout << "q       "  << q <<  std::endl; 
+
+  double prob = h2genprob->Interpolate(piSmass,q);
+  //std::cout << piSmass << std::endl;
+  //std::cout << q << std::endl;
+  //std::cout << prob << std::endl;
+  //bool isPassed = false;
+  if(  prob <  G4UniformRand()) goto START;
 
 
   //---------------------//
@@ -989,45 +1020,98 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
       return false;
     }
     ran = WeightMAX*G4UniformRand();
+
+    
+    // piSigma sim
     //const double piSmass_min = 1.32894;//
     //const double piSmass_max = 1.92;
     //const double q_min = 0.0;
     //const double q_max = 1.5;
     //double mass_th = piSmass_min + (piSmass_max - piSmass_min)*G4UniformRand();
-    /*
-    std::cout << std::endl;
-    std::cout << "weight " << weight << std::endl;
-    std::cout << "ran    " << ran << std::endl;
-    std::cout << "mass0 " << mass[0] << std::endl;
-    std::cout << "mass1 " << mass[1] << std::endl;
-    std::cout << "mass2 " << mass[2] << std::endl;
-    */
-    G4ThreeVector vec_n = ConvVecTG( gen->GetDecay(0)->Vect() ); 
-    G4ThreeVector vec_S = ConvVecTG( gen->GetDecay(1)->Vect() ); 
-    G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
+    //std::cout << std::endl;
+    //std::cout << "weight " << weight << std::endl;
+    //std::cout << "ran    " << ran << std::endl;
+    //std::cout << "mass0 " << mass[0] << std::endl;
+    //std::cout << "mass1 " << mass[1] << std::endl;
+    //std::cout << "mass2 " << mass[2] << std::endl;
+    //asano memo
+    //Note : C.M. frame
+    //
+    //G4ThreeVector vec_n = ConvVecTG( gen->GetDecay(0)->Vect() ); 
+    //G4ThreeVector vec_S = ConvVecTG( gen->GetDecay(1)->Vect() ); 
+    //G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
     //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
     //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    G4LorentzVector lvec0,lvec1,lvec2;
-    lvec0.setVectM(vec_n,mass[0]);//neutron
-    lvec1.setVectM(vec_S,mass[1]);//Sigma
-    lvec2.setVectM(vec_pi,mass[2]);//pion
+    //G4LorentzVector lvec0,lvec1,lvec2;
+    //lvec0.setVectM(vec_n,mass[0]);//neutron
+    //lvec1.setVectM(vec_S,mass[1]);//Sigma
+    //lvec2.setVectM(vec_pi,mass[2]);//pion
     //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
     //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
     //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
-    G4LorentzVector TL_piSigma = lvec1+lvec2;
+
+    //G4LorentzVector TL_piSigma = lvec1+lvec2;
     //G4ThreeVector beammom(0,0,1000.);
     //G4LorentzVector TL_beam;
     //TL_beam.setVectM(beammom,493.);
     //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
-    double piSmass = TL_piSigma.m()/1000.;
+    //double piSmass = TL_piSigma.m()/1000.;
+    //std::cout << "nmiss "  << lvec0.m() <<  std::endl; 
+    //std::cout << "Sigma "  << lvec1.m() <<  std::endl; 
     //std::cout << "piSigma "  << piSmass <<  std::endl; 
     //std::cout << "q       "  << q <<  std::endl; 
-    double cosn= lvec0.cosTheta();
+    //double cosn= lvec0.cosTheta();
     //std::cout << "cosn" << cosn << std::endl;
-   // if( ran<weight && (((0.85<cosn) && (cosn<=1)) || (piSmass<1.40)) ){
-    if( ran<weight) {
-      //std::cout << "break" << std::endl;
-      break;
+    
+    
+    // pLambdapi- sim
+    //const double piLmass_min = 1.32894;//
+    //const double piLmass_max = 1.92;
+    //const double q_min = 0.0;
+    //const double q_max = 1.5;
+    //double mass_th = piSmass_min + (piSmass_max - piSmass_min)*G4UniformRand();
+    //std::cout << std::endl;
+    //std::cout << "weight " << weight << std::endl;
+    //std::cout << "ran    " << ran << std::endl;
+    //std::cout << "mass0 " << mass[0] << std::endl;
+    //std::cout << "mass1 " << mass[1] << std::endl;
+    //std::cout << "mass2 " << mass[2] << std::endl;
+    //G4ThreeVector vec_p = ConvVecTG( gen->GetDecay(0)->Vect() ); 
+    //G4ThreeVector vec_L = ConvVecTG( gen->GetDecay(1)->Vect() ); 
+    //G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
+    //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
+    //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
+    //G4LorentzVector lvec0,lvec1,lvec2;
+    //lvec0.setVectM(vec_p,mass[0]);//proton
+    //lvec1.setVectM(vec_L,mass[1]);//Lambda
+    //lvec2.setVectM(vec_pi,mass[2]);//pion
+    //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
+    //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
+    //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
+    //G4LorentzVector TL_Lpim = lvec1+lvec2;
+    //G4ThreeVector beammom(0,0,1000.);
+    //G4LorentzVector TL_beam;
+    //TL_beam.setVectM(beammom,493.);
+    //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
+    //double Lpimmass = TL_Lpim.m()/1000.;
+    //std::cout << "piSigma "  << piSmass <<  std::endl; 
+    //std::cout << "q       "  << q <<  std::endl; 
+    //double cosp= lvec0.cosTheta();
+    //std::cout << "cosn" << cosn << std::endl;
+    
+     //if( ran<weight && (((0.85<cosn) && (cosn<=1)) || (piSmass<1.40)) ){
+    // if( ran<weight && (((0.85<cosp) && (cosp<=1)))  ){
+    if( ran<weight  ) {
+      //double prob = h2genprob->Interpolate(piSmass,q);
+      //std::cout << piSmass << std::endl;
+      //std::cout << q << std::endl;
+      //std::cout << prob << std::endl;
+      //bool isPassed = false;
+      //if(  prob >  G4UniformRand()) isPassed = true;
+      //std::cout << "break" << std::endl; 
+      //if(isPassed){
+        break;
+      //}
     }
     //break; // for debug
   }
