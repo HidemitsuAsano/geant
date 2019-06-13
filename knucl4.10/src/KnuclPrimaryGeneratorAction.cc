@@ -96,7 +96,13 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
     PrintAllCS();
     ana->SetCSTable(*csTable);
   }
-  TFile *genfile = new TFile("probSp.root","READ");
+  int csID = csTable->CS(0).Id();
+  std::cout << __FILE__ << " L." << __LINE__ << " csID: " << csID << std::endl;
+  TFile *genfile = NULL;
+  if(csID == 1725)   genfile = new TFile("probSp.root","READ");
+  if(csID == 1525)   genfile = new TFile("probSm.root","READ");
+  if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
+  G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
   h2genprob = (TH2D*) genfile->Get("h2prob");
   h2genprob->Print();
   //gErrorIgnoreLevel = 5000;
@@ -876,8 +882,8 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     lvec[i].boost(boost);
   }
   //0: missing neutron
-  //1: S
-  //2: pi
+  //1: S+/-
+  //2: pi-/+
   G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
   G4ThreeVector beammom(0,0,1000.);
   G4LorentzVector TL_beam;
@@ -893,7 +899,6 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //std::cout << piSmass << std::endl;
   //std::cout << q << std::endl;
   //std::cout << prob << std::endl;
-  //bool isPassed = false;
   if(  prob <  G4UniformRand()) goto START;
 
 
