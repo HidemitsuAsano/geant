@@ -1,0 +1,53 @@
+# ######################################
+# -------------------------------------
+# CrossSection List for K3He mode
+# -------------------------------------
+# *************************************************************************
+# * Refecence: CERN-HERA-83-02
+# *      (Compilation_of_cross-sections for K+/- induced reactions)
+# * Please see a summarized table for 1 GeV/c:
+# *   http://ag.riken.jp/J-PARC/E15-Design-Files/Compilation_of_cross-sections/K-N_CS.xlsx
+# *************************************************************************
+#  ### c.f. measured CS's ###
+#  K-p: total-CS = 51.7  mb @ 1.020 GeV/c [PR168,1466]
+#  K-n: total-CS = 40.7  mb @ 0.984 GeV/c [PR125,1696]
+#  K-d: total-CS = 82.25 mb @ 0.99  GeV/c [PRL168,1466]
+#
+# You have to list up CS as 2-lines:
+# -------------------------------------------------------------------------
+# |reac|CS|CS    |beam|beam|target|react|num-of|num-of   |num-of  |max-of  |
+# |ID  |  |factor|mom |par |par   |par  |final |spectator|Legendre|Legendre|
+# -------------------------------------------------------------------------
+# |final|final|...|spec|spec|...|Legendre|Legendre|...|
+# |PDG1 |PDG2 |   |PDG1|PDG2|   |A(0)    |A(1)    |   |
+# -----------------------------------------------------
+#
+# * NOTE 1
+# beam momentum is just reference, i.e., not used for calc.
+#
+# * NOTE 2
+# final-PDG1 must be a final particle used for angular-dist. calc.
+#
+# * NOTE 3
+# CS-factor is used as [CS-factor]*CS
+#  -> e.g. K-p CS in K-3He could be ~2 times larger than elementaly.
+#          then set CS-factor to 2
+#
+# * NOTE 4
+# please write "EOF" end of this file
+#
+# ######################################
+#
+
+# &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+# &&&&&  2NA processes            &&&&&
+# &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+# *************************************
+# 2006: K- d -> npi+pi-L
+# *************************************
+# 2006: K- d = n pi+ pi- L
+ 2006  1.  1  1.0  -321  1000010020  1000010020  4  0  0  0
+ 2112  211 -211 3112
+#
+EOF
+
