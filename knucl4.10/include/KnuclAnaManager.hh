@@ -206,7 +206,7 @@ private:
   TString       Seed;
 public:
   TString       GetSeed()   {return Seed;     }
-
+ 
 
 //==============// 
 // for DataInfo //

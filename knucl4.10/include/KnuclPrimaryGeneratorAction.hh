@@ -40,7 +40,7 @@
 #include <TGraph.h>
 #include <TFile.h>
 #include <TF1.h>
-
+#include <TH2.h>
 
 // ############################################################# //
 // ### === 3He ===                                           ### //
@@ -114,6 +114,7 @@ class KnuclPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     TF1* FermiMotion_3HeTwoBody_dist;
     TF1* FermiMotion_3HeThreeBody_dist;
     TF1* FermiMotion_deuteron_dist;
+    TH2D* h2genprob;
 };
 
 #endif
