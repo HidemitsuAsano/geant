@@ -72,7 +72,7 @@ Knucl:FowardAccept            0		   # forward acceptance selection
 #Single:Vertex_MIN    -10.0 -10.0 -30.0	   # 3D vertex pos., unit in [mm]
 #Single:Vertex_MAX    10.0 10.0 30.0	   # 3D vertex pos., unit in [mm]
 #------------------------------------------#
-Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim_DoraAir.conf
+Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim.conf
                                            # detector configuration
 					   #
 Detector:DORAFieldMapFlag      1           # 1=use field map,

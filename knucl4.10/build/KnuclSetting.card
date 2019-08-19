@@ -15,7 +15,7 @@ Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_all.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS/kd_all.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -72,7 +72,7 @@ Knucl:FowardAccept            0		   # forward acceptance selection
 #Single:Vertex_MIN    -10.0 -10.0 -30.0	   # 3D vertex pos., unit in [mm]
 #Single:Vertex_MAX    10.0 10.0 30.0	   # 3D vertex pos., unit in [mm]
 #------------------------------------------#
-Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim.conf
+Detector:ConfFileName          conf/Run78/analyzer.conf
                                            # detector configuration
 					   #
 Detector:DORAFieldMapFlag      1           # 1=use field map,

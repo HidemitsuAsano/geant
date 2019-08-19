@@ -104,7 +104,7 @@ Detector:ADCThreshold_14       0.6         # [CVC]  Unit in [MeV]
 Detector:ADCThreshold_35       0.6         # [PC]   Unit in [MeV]
 Detector:ADCThreshold_32       0.1         # [NC]   Unit in [MeV]
 Detector:ADCThreshold_33       0.2         # [BVC]  Unit in [MeV]
-Detector:ADCThreshold_41       0.1         # [BPD]  Unit in [MeV]
+Detector:ADCThreshold_41      9999.9       # [BPD]  Unit in [MeV]
 Detector:ADCThreshold_42      0.06         # [IH]   Unit in [MeV]
 
 Detector:FWDTrigger		0	   # You can select NC/PC fired events.

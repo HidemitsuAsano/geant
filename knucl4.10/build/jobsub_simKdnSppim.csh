@@ -1,5 +1,5 @@
 #!/bin/tcsh -f
-set Version="1"
+set Version="20"
 #set DATADIR="/group/had/knucl/e15/data/Run78/"
 set OUTDIR="/group/had/knucl/e15/asano/sim/"
 #set KWSKDIR="/group/had/knucl/e15/shinngo/Run78/evtracking/"
@@ -39,7 +39,7 @@ while ($i < 400)
   #echo ${CDSFILE}
 
   set logname = "${logdir}/run$i.log"
-  bsub -o $logname -q l ${EXEC___} ${CARD___} ${MAC___} ${OUTFILE} 
+  bsub -o $logname -q l ${EXEC___} ${CARD___} ${MAC___} ${OUTFILE} ${jobnum}
     @ i ++
 end
 
