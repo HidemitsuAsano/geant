@@ -1261,6 +1261,7 @@ G4VPhysicalVolume* KnuclDetectorConstruction::Construct()
     G4FieldManager* CDCFieldMgr = fEmFieldSetupCDC->GetFieldManager();
     cds->SetFieldManager(CDCFieldMgr,0);
   }
+  
 
   G4LogicalVolume* uswk=ConstructShape(CID_USWK);
   if(USWKFieldMapFlag == 0){
@@ -1321,4 +1322,6 @@ void KnuclDetectorConstruction::ConstructTarget()
   ConstructShape(CID_CellRing);
   ConstructShape(CID_BShield);
   ConstructShape(CID_BFrange);
+  ConstructShape(CID_Bobbin);
+  ConstructShape(CID_Coil);
 }
