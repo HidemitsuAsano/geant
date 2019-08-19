@@ -105,7 +105,9 @@ enum gCounterID { CID_CDC     = 0,
 		  CID_BShield  = 154,
 		  CID_BFrange  = 155,
 		  CID_CellRing=156,
-		  CID_Fiducial = 160 
+		  CID_Fiducial = 160,
+      CID_Bobbin = 161,
+      CID_Coil = 162
 };
 
 //### utilities ###//
