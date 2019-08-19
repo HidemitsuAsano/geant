@@ -102,9 +102,10 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
   if(csID == 1725)   genfile = new TFile("probSp.root","READ");
   if(csID == 1525)   genfile = new TFile("probSm.root","READ");
   if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
-  G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
-  h2genprob = (TH2D*) genfile->Get("h2prob");
-  h2genprob->Print();
+  if(csID == 2006)   genfile = new TFile("probnpipiL.root","READ");
+  //G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
+  if(genfile)h2genprob = (TH2D*) genfile->Get("h2prob");
+  if(genfile)h2genprob->Print();
   //gErrorIgnoreLevel = 5000;
   // fermi motion with 
   std::string str = "([0]*exp(-x*x/([1]*[1]))+[2]*exp(-x*x/([3]*[3]))+[4]*exp(-x*x/([5]*[5])))*x*x";
@@ -584,8 +585,6 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //-------------------------------------//
   //--- K-pp shape from the root-file ---//
   //-------------------------------------//
-  //
-  //asano memo:
   if( anaManager->GetKppShape() && cs.Id()==3000 ){ // NO spectators
     if( !ManyBody(CMmass, nBody, mass, vec) ) goto START;    
     double P0 = vec[0].mag();
@@ -597,7 +596,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //--- Fermi motion ---//
   //--------------------//
   //asano memo
-  //if taking into account Fermi motion (not necesarry ?)
+  //if taking into account Fermi motion
   else if( FermiFlag ){
     if( FermiMode ){
       //==============================//
@@ -706,6 +705,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //*** CAUTION: fixed to the first filled spectator ***//
     int in1_pdg = 0;
     int in2_pdg = cs.SpecPdg(in2_id);
+    //asano memo fill virtual particle after 1st step
     std::vector <int> in1_pdg_cand;
     if( mode_ts==0 ){ // Sigma+/0/- -> Lambda conversion
       in1_pdg_cand.push_back(3222); // Sigma+
@@ -723,8 +723,6 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
       in1_pdg_cand.push_back(-311); // K0bar
     } else if( mode_ts==4 ){ // K*-n->K0Xi-
       in1_pdg_cand.push_back(-323); // K*-
-    //asano memo
-    //added from Inoue's code
     } else if( mode_ts==10 ){ // K-/0 N elastic
       in1_pdg_cand.push_back(-311); // K0bar
       in1_pdg_cand.push_back(-321); // K-
@@ -732,6 +730,14 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     else if( mode_ts==20 || mode_ts==21 || mode_ts==22 || mode_ts==23 ){
       in1_pdg_cand.push_back(-311); // K0bar
       in1_pdg_cand.push_back(-321); // K-
+    }
+    //Added by Asano
+    else if( mode_ts==30){//K-p -> K0n(1st), n-n elastic in E31
+      in1_pdg_cand.push_back(2112);//n
+    }
+    //Added by Asano
+    else if( mode_ts==40){//K-p->K0n (1st),  K0n -> pi+pi-Lambda (2nd)
+      in1_pdg_cand.push_back(-311);//K0bar
     }
     else{
       std::cout<<"!!!!! unknown two step mode !!!!! "<<mode_ts<<std::endl;
@@ -750,6 +756,8 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     }
 
     //--- particle selection ---//
+    //asano memo
+    //set final products produced by 2nd step
     std::vector <G4ParticleDefinition*> particle_ts;
     if( flag_ts ){
       if( mode_ts==0 ){
@@ -777,7 +785,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
 	    particle_ts.push_back(particleTable->FindParticle(2112));
 	    particle_ts.push_back(particleTable->FindParticle(2112));
 	  }
-	}
+	}//Sigma case end
       }
       else if( mode_ts==1 || mode_ts==2 ){
 	particle_ts.push_back(particleTable->FindParticle(in1_pdg));
@@ -790,6 +798,16 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
       else if( mode_ts==4 ){//  K*-n->K0Xi-
 	particle_ts.push_back(particleTable->FindParticle(311)); // K0
 	particle_ts.push_back(particleTable->FindParticle(3312)); // Xi-
+      }
+      //Added by Asano
+      else if( mode_ts==30 ){//K-p -> K0n(1st), n-n elastic in E31  
+  particle_ts.push_back(particleTable->FindParticle(2112));
+  particle_ts.push_back(particleTable->FindParticle(2112));
+      }
+      else if( mode_ts==40){//K0n -> pi+pi-Lambda (2nd) 
+  particle_ts.push_back(particleTable->FindParticle(-211));
+  particle_ts.push_back(particleTable->FindParticle(211));
+  particle_ts.push_back(particleTable->FindParticle(3122));
       }
     } // if( flag_ts ){
 
@@ -884,22 +902,30 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   //0: missing neutron
   //1: S+/-
   //2: pi-/+
-  G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
-  G4ThreeVector beammom(0,0,1000.);
-  G4LorentzVector TL_beam;
-  TL_beam.setVectM(beammom,493.);
-  double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;
-  double piSmass = TL_piSigma.m()/1000.;
+  //G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
+  //
+
+  //npipiL simulation
+  //0: n
+  //1: pi+
+  //2: pi-
+  //3: missing Lambda
+  //G4LorentzVector TL_piSigma = lvec[0]+lvec[1]+lvec[2];
+  //G4ThreeVector beammom(0,0,1000.);
+  //G4LorentzVector TL_beam;
+  //TL_beam.setVectM(beammom,493.);
+  //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;
+  //double piSmass = TL_piSigma.m()/1000.;
   //std::cout << "nmiss "  << lvec0.m() <<  std::endl; 
   //std::cout << "Sigma "  << lvec1.m() <<  std::endl; 
   //std::cout << "piSigma "  << piSmass <<  std::endl; 
   //std::cout << "q       "  << q <<  std::endl; 
 
-  double prob = h2genprob->Interpolate(piSmass,q);
+  //double prob = h2genprob->Interpolate(piSmass,q);
   //std::cout << piSmass << std::endl;
   //std::cout << q << std::endl;
   //std::cout << prob << std::endl;
-  if(  prob <  G4UniformRand()) goto START;
+  //if(  prob <  G4UniformRand()) goto START;
 
 
   //---------------------//
@@ -1025,98 +1051,8 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
       return false;
     }
     ran = WeightMAX*G4UniformRand();
-
-    
-    // piSigma sim
-    //const double piSmass_min = 1.32894;//
-    //const double piSmass_max = 1.92;
-    //const double q_min = 0.0;
-    //const double q_max = 1.5;
-    //double mass_th = piSmass_min + (piSmass_max - piSmass_min)*G4UniformRand();
-    //std::cout << std::endl;
-    //std::cout << "weight " << weight << std::endl;
-    //std::cout << "ran    " << ran << std::endl;
-    //std::cout << "mass0 " << mass[0] << std::endl;
-    //std::cout << "mass1 " << mass[1] << std::endl;
-    //std::cout << "mass2 " << mass[2] << std::endl;
-    //asano memo
-    //Note : C.M. frame
-    //
-    //G4ThreeVector vec_n = ConvVecTG( gen->GetDecay(0)->Vect() ); 
-    //G4ThreeVector vec_S = ConvVecTG( gen->GetDecay(1)->Vect() ); 
-    //G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
-    //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    //G4LorentzVector lvec0,lvec1,lvec2;
-    //lvec0.setVectM(vec_n,mass[0]);//neutron
-    //lvec1.setVectM(vec_S,mass[1]);//Sigma
-    //lvec2.setVectM(vec_pi,mass[2]);//pion
-    //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
-    //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
-    //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
-
-    //G4LorentzVector TL_piSigma = lvec1+lvec2;
-    //G4ThreeVector beammom(0,0,1000.);
-    //G4LorentzVector TL_beam;
-    //TL_beam.setVectM(beammom,493.);
-    //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
-    //double piSmass = TL_piSigma.m()/1000.;
-    //std::cout << "nmiss "  << lvec0.m() <<  std::endl; 
-    //std::cout << "Sigma "  << lvec1.m() <<  std::endl; 
-    //std::cout << "piSigma "  << piSmass <<  std::endl; 
-    //std::cout << "q       "  << q <<  std::endl; 
-    //double cosn= lvec0.cosTheta();
-    //std::cout << "cosn" << cosn << std::endl;
-    
-    
-    // pLambdapi- sim
-    //const double piLmass_min = 1.32894;//
-    //const double piLmass_max = 1.92;
-    //const double q_min = 0.0;
-    //const double q_max = 1.5;
-    //double mass_th = piSmass_min + (piSmass_max - piSmass_min)*G4UniformRand();
-    //std::cout << std::endl;
-    //std::cout << "weight " << weight << std::endl;
-    //std::cout << "ran    " << ran << std::endl;
-    //std::cout << "mass0 " << mass[0] << std::endl;
-    //std::cout << "mass1 " << mass[1] << std::endl;
-    //std::cout << "mass2 " << mass[2] << std::endl;
-    //G4ThreeVector vec_p = ConvVecTG( gen->GetDecay(0)->Vect() ); 
-    //G4ThreeVector vec_L = ConvVecTG( gen->GetDecay(1)->Vect() ); 
-    //G4ThreeVector vec_pi = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    //vec[1] = ConvVecTG( gen->GetDecay(1)->Vect() ); 
-    //vec[2] = ConvVecTG( gen->GetDecay(2)->Vect() ); 
-    //G4LorentzVector lvec0,lvec1,lvec2;
-    //lvec0.setVectM(vec_p,mass[0]);//proton
-    //lvec1.setVectM(vec_L,mass[1]);//Lambda
-    //lvec2.setVectM(vec_pi,mass[2]);//pion
-    //std::cout << "theta0 " << lvec0.cosTheta() << std::endl;
-    //std::cout << "theta1 " << lvec1.cosTheta() << std::endl;
-    //std::cout << "theta2 " << lvec2.cosTheta() << std::endl;
-    //G4LorentzVector TL_Lpim = lvec1+lvec2;
-    //G4ThreeVector beammom(0,0,1000.);
-    //G4LorentzVector TL_beam;
-    //TL_beam.setVectM(beammom,493.);
-    //double q = (TL_beam.vect()-lvec0.vect()).mag()/1000.;
-    //double Lpimmass = TL_Lpim.m()/1000.;
-    //std::cout << "piSigma "  << piSmass <<  std::endl; 
-    //std::cout << "q       "  << q <<  std::endl; 
-    //double cosp= lvec0.cosTheta();
-    //std::cout << "cosn" << cosn << std::endl;
-    
-     //if( ran<weight && (((0.85<cosn) && (cosn<=1)) || (piSmass<1.40)) ){
-    // if( ran<weight && (((0.85<cosp) && (cosp<=1)))  ){
     if( ran<weight  ) {
-      //double prob = h2genprob->Interpolate(piSmass,q);
-      //std::cout << piSmass << std::endl;
-      //std::cout << q << std::endl;
-      //std::cout << prob << std::endl;
-      //bool isPassed = false;
-      //if(  prob >  G4UniformRand()) isPassed = true;
-      //std::cout << "break" << std::endl; 
-      //if(isPassed){
         break;
-      //}
     }
     //break; // for debug
   }

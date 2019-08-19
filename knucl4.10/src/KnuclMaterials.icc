@@ -68,7 +68,7 @@ void KnuclMaterialManager::DefineMaterials()
 
   a = 63.546*g/mole;
   density = 8.96*g/cm3;
-  new G4Material("Copper", z=29., a, density);
+  G4Material* Cu = new G4Material("Copper", z=29., a, density);
 
   a = 12.0107*g/mole;
   density = 1.80*g/cm3;
@@ -284,4 +284,18 @@ void KnuclMaterialManager::DefineMaterials()
   Polyvinyl->AddElement(elH, natoms=3);
   Polyvinyl->AddElement(elCl, natoms=1);
 
+//Epoxy (C2H4N1)
+  //https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf
+  G4Material* Epoxy = new G4Material("Epoxy",density=1.2*g/cm3,ncomponents=3);
+  Epoxy->AddElement(elC,natoms=2);
+  Epoxy->AddElement(elH,natoms=4);
+  Epoxy->AddElement(elN,natoms=1);
+
+
+//Coil (Cu + Water + Epoxy)
+  density = (8.96*0.592 + 1.2*0.262 + 1.0*0.146)*g/cm3;
+  G4Material* Coil = new G4Material("Coil", density, ncomponents=3);
+  Coil->AddMaterial(Cu, massfraction = 8.96*0.592*g/cm3/density);
+  Coil->AddMaterial(Epoxy, massfraction = 1.2*0.262*g/cm3/density);
+  Coil->AddMaterial(Water, massfraction = 1.0*0.146*g/cm3/density);
 }

@@ -12,6 +12,7 @@ KnuclHist::~KnuclHist()
 void KnuclHist::BeginOfRunAction(const char *filename)
 {
   rootfile=new TFile(filename,"RECREATE");
+  rootfile->SetCompressionLevel(9);
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
   // tree
@@ -30,8 +31,6 @@ void KnuclHist::BeginOfRunAction(const char *filename)
   tree->Branch("DetectorData","DetectorData",&detectorData);
   tree->Branch("MCData","MCData",&mcData);
   tree->Branch("ReactionData", "ReactionData", &reactionData);
-
-
 
 }
 
