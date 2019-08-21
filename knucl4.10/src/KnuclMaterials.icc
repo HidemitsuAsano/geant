@@ -293,9 +293,9 @@ void KnuclMaterialManager::DefineMaterials()
 
 
 //Coil (Cu + Water + Epoxy)
-  density = (8.96*0.592 + 1.2*0.262 + 1.0*0.146)*g/cm3;
+  density = (8.96*0.592 + 1.2*0.146 + 1.0*0.262)*g/cm3;
   G4Material* Coil = new G4Material("Coil", density, ncomponents=3);
   Coil->AddMaterial(Cu, massfraction = 8.96*0.592*g/cm3/density);
-  Coil->AddMaterial(Epoxy, massfraction = 1.2*0.262*g/cm3/density);
-  Coil->AddMaterial(Water, massfraction = 1.0*0.146*g/cm3/density);
+  Coil->AddMaterial(Epoxy, massfraction = 1.2*0.146*g/cm3/density);
+  Coil->AddMaterial(Water, massfraction = 1.0*0.262*g/cm3/density);
 }
