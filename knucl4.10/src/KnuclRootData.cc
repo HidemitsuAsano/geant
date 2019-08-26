@@ -84,6 +84,7 @@ void Track::init()
   tVertex        = DEFVALT;
   tMomentum      = DEFVALT;
   vnDetectorHitLink.clear();
+  CreatorProcess = "";
 }
 
 

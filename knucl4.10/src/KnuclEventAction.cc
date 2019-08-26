@@ -1,4 +1,4 @@
-// $Id: KnuclEventAction.cc,v 1.6 2016/11/09 08:41:09 inoue Exp $
+// $Id: KnuclEventAction.cc,v 1.7 2019/08/23 02:35:29 hashimoto Exp $
 // GEANT4 tag $Name:  $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -352,8 +352,10 @@ void KnuclEventAction::EndOfEventAction(const G4Event* evt)
     KnuclTrajectory* trj = (KnuclTrajectory*)((*(evt->GetTrajectoryContainer()))[*it_l]);
     G4int tID = trj->GetTrackID();
     G4int pID = trj->GetParentID();
+    TString cpro = trj->GetCreatorProcess();
 
     Track tmp;
+    tmp.setCreatorProcess(cpro);
     tmp.setTrackID(tID);
     tmp.setParentTrackID(pID);
     tmp.setPdgID(trj->GetPDGEncoding());

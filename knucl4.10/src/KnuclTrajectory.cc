@@ -22,6 +22,7 @@ KnuclTrajectory::KnuclTrajectory()
 {
    fpParticleDefinition = 0;
    ParticleName = "";
+   CreatorProcess = "";
    PDGCharge = 0;
    PDGEncoding = 0;
    fTrackID = 0;
@@ -41,7 +42,10 @@ KnuclTrajectory::KnuclTrajectory(const G4Track* aTrack)
    ParticleName         = fpParticleDefinition->GetParticleName();
    PDGCharge            = fpParticleDefinition->GetPDGCharge();
    PDGEncoding          = fpParticleDefinition->GetPDGEncoding();
-
+   const G4VProcess *pro= aTrack->GetCreatorProcess();
+   if(pro){
+     CreatorProcess = pro->GetProcessName();
+   }
    if(ParticleName=="unknown")
    {
      G4PrimaryParticle*pp = aTrack->GetDynamicParticle()->GetPrimaryParticle();

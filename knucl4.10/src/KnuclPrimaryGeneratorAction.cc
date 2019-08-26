@@ -80,6 +80,7 @@ const G4double beam_yp =  -0.771*mrad;
 const G4double beam_dxp =  18.53*mrad;
 const G4double beam_dyp =  7.808*mrad;
 
+const bool MakeUniformInqmass = true;
 
 //////////////////////////////////////////////////////
 KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
@@ -99,13 +100,15 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
   int csID = csTable->CS(0).Id();
   std::cout << __FILE__ << " L." << __LINE__ << " csID: " << csID << std::endl;
   TFile *genfile = NULL;
-  if(csID == 1725)   genfile = new TFile("probSp.root","READ");
-  if(csID == 1525)   genfile = new TFile("probSm.root","READ");
-  if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
-  if(csID == 2006)   genfile = new TFile("probnpipiL.root","READ");
-  //G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
-  if(genfile)h2genprob = (TH2D*) genfile->Get("h2prob");
-  if(genfile)h2genprob->Print();
+  if(MakeUniformInqmass){
+    if(csID == 1725)   genfile = new TFile("probSp.root","READ");
+    if(csID == 1525)   genfile = new TFile("probSm.root","READ");
+    if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
+    if(csID == 2006)   genfile = new TFile("probnpipiL.root","READ");
+    //G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
+    if(genfile)h2genprob = (TH2D*) genfile->Get("h2prob");
+    if(genfile)h2genprob->Print();
+  }
   //gErrorIgnoreLevel = 5000;
   // fermi motion with 
   std::string str = "([0]*exp(-x*x/([1]*[1]))+[2]*exp(-x*x/([3]*[3]))+[4]*exp(-x*x/([5]*[5])))*x*x";
@@ -891,42 +894,36 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   } // if( anaManager->GetFowardAccept() ){
   //std::cerr<<"num of loop = "<<counter<<std::endl;
   
-  //---------------------------------------------------//
-  //uniform distribution for 3-body 
-  //---------------------------------------------------//
-  G4LorentzVector lvec[3];
-  for(int i=0;i<3;i++){
-    lvec[i].setVectM(vec[i], mass[i]);
-    lvec[i].boost(boost);
+  if(MakeUniformInqmass){
+    //---------------------------------------------------//
+    //uniform distribution for 3-body 
+    //---------------------------------------------------//
+    G4LorentzVector lvec[3];
+    for(int i=0;i<3;i++){
+      lvec[i].setVectM(vec[i], mass[i]);
+      lvec[i].boost(boost);
+    }
+    //0: missing neutron
+    //1: S+/-
+    //2: pi-/+
+    G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
+
+    //npipiL simulation
+    //0: n
+    //1: pi+
+    //2: pi-
+    //3: missing Lambda
+    //G4LorentzVector TL_piSigma = lvec[0]+lvec[1]+lvec[2];
+    G4ThreeVector beammom(0,0,1000.);
+    G4LorentzVector TL_beam;
+    TL_beam.setVectM(beammom,493.);
+  //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;//npipiL
+    double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//piSigma
+    double piSmass = TL_piSigma.m()/1000.;
+
+    double prob = h2genprob->Interpolate(piSmass,q);
+    if(  prob <  G4UniformRand()) goto START;
   }
-  //0: missing neutron
-  //1: S+/-
-  //2: pi-/+
-  //G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
-  //
-
-  //npipiL simulation
-  //0: n
-  //1: pi+
-  //2: pi-
-  //3: missing Lambda
-  //G4LorentzVector TL_piSigma = lvec[0]+lvec[1]+lvec[2];
-  //G4ThreeVector beammom(0,0,1000.);
-  //G4LorentzVector TL_beam;
-  //TL_beam.setVectM(beammom,493.);
-  //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;
-  //double piSmass = TL_piSigma.m()/1000.;
-  //std::cout << "nmiss "  << lvec0.m() <<  std::endl; 
-  //std::cout << "Sigma "  << lvec1.m() <<  std::endl; 
-  //std::cout << "piSigma "  << piSmass <<  std::endl; 
-  //std::cout << "q       "  << q <<  std::endl; 
-
-  //double prob = h2genprob->Interpolate(piSmass,q);
-  //std::cout << piSmass << std::endl;
-  //std::cout << q << std::endl;
-  //std::cout << prob << std::endl;
-  //if(  prob <  G4UniformRand()) goto START;
-
 
   //---------------------//
   //--- set particles ---//
