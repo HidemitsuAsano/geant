@@ -244,6 +244,7 @@ void KnuclAnaManager::InitParameters()
   Comment            = "test";
   // for DebugInfo 
   DebugFlag          = "false";
+  UniformGenFlag     = 0;
 }
 
 
@@ -318,6 +319,8 @@ void KnuclAnaManager::SetParameters(ComCardsInput *inp)
   const char key7[]="DebugInfo";
   if (inp->FindEntry(key7,"DebugFlag",  "s",1,1)>0) DebugFlag = inp->GetArg(0);
 
+  const char key8[]="UniformGen";
+  if (inp->FindEntry(key8,"UniformGen", "f",1,1)>0) UniformGenFlag = inp->GetArgF(0);
 
   if ( !strcmp(TargetName.Data(),"L3He") ) {
     TargetMaterialID = 0; 

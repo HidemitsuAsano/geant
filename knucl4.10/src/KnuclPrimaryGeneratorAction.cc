@@ -80,7 +80,6 @@ const G4double beam_yp =  -0.771*mrad;
 const G4double beam_dxp =  18.53*mrad;
 const G4double beam_dyp =  7.808*mrad;
 
-const bool MakeUniformInqmass = true;
 
 //////////////////////////////////////////////////////
 KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
@@ -100,7 +99,9 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
   int csID = csTable->CS(0).Id();
   std::cout << __FILE__ << " L." << __LINE__ << " csID: " << csID << std::endl;
   TFile *genfile = NULL;
+  MakeUniformInqmass = anaManager->GetUniformGenFlag();
   if(MakeUniformInqmass){
+    std::cout << "Make Uniform in q vs mass " << std::endl;
     if(csID == 1725)   genfile = new TFile("probSp.root","READ");
     if(csID == 1525)   genfile = new TFile("probSm.root","READ");
     if(csID == 1600)   genfile = new TFile("probLpim.root","READ");

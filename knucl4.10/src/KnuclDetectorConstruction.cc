@@ -1277,7 +1277,7 @@ G4VPhysicalVolume* KnuclDetectorConstruction::Construct()
   
   if (GetCounterStatus(CID_CDC) ) ConstructShape(CID_CDC);
   if (GetCounterStatus(CID_CDH) ) ConstructShape(CID_CDH);
-//if (GetCounterStatus(CID_IH)  ) ConstructShape(CID_IH);   kawasak
+  //if (GetCounterStatus(CID_IH)  ) ConstructShape(CID_IH);   kawasak
 
   if (GetCounterStatus(CID_BVC) ) ConstructShape(CID_BVC);
   if (GetCounterStatus(CID_FDC1)) ConstructShape(CID_FDC1);
