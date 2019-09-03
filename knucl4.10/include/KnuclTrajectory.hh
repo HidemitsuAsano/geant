@@ -11,6 +11,7 @@
 #include "G4TrajectoryPoint.hh"   
 #include "G4Track.hh"
 #include "G4Step.hh"
+#include "G4VProcess.hh"
 #include <vector>
 
 class G4Polyline;
@@ -38,6 +39,8 @@ class KnuclTrajectory : public G4VTrajectory
    { return fParentID; }
    virtual G4String GetParticleName() const
    { return ParticleName; }
+   virtual G4String GetCreatorProcess() const
+   { return CreatorProcess; }
    virtual G4double GetCharge() const
    { return PDGCharge; }
    virtual G4int GetPDGEncoding() const
@@ -83,6 +86,7 @@ private:
    G4ThreeVector                vertexPosition;
    G4double                     globalTime;
    G4int                        DrawTrajectoryMode;
+   G4String                     CreatorProcess;
 };
 
 extern G4Allocator<KnuclTrajectory> myTrajectoryAllocator;

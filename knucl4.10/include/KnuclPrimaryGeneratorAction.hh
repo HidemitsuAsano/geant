@@ -115,6 +115,7 @@ class KnuclPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     TF1* FermiMotion_3HeThreeBody_dist;
     TF1* FermiMotion_deuteron_dist;
     TH2D* h2genprob;
+    G4int MakeUniformInqmass;
 };
 
 #endif

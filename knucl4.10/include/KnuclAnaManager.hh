@@ -12,7 +12,7 @@
 #include <TH1F.h> 
 
 #include <fstream>
-
+#include <cstdio>
 #include "ComCardsInput.hh"
 #include "ComCrossSectionTable.hh"
 
@@ -81,6 +81,7 @@ private:
   TString       PhysicsList;
   Process_t     ProcessID;
   TString       CSFileName;
+  TString       CardFileName;
   G4int         FermiMotion;
   G4int         FermiMotionMode;
   G4int         TwoStep;  
@@ -224,6 +225,13 @@ private:
   TString       DebugFlag;
 public:
   const char*   GetDebugFlag() { return DebugFlag.Data(); }
+
+
+//Uniform Gen
+private:
+  G4int      UniformGenFlag;
+public:
+  G4int GetUniformGenFlag() { return UniformGenFlag;}
 
 private:
   G4ThreeVector BeamDirection;
