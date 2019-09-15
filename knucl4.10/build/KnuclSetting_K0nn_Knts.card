@@ -15,7 +15,7 @@ Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_k0nn.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS_inoue/kd_k0n_ns.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -23,10 +23,10 @@ Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 Knucl:FermiMotionMode          1	   # 0: Off-Shell method
 			       		   # 1: ON-shell  method
 					   #
-Knucl:TwoStep		       0	   # 0: w/o 2-step reactions
+Knucl:TwoStep		       1	   # 0: w/o 2-step reactions
 			       		   # 1: w/  2-step reactions
 					   #
-#Knucl:TwoStepMode	       2	   # mode slection @ Knucl:TwoStep
+Knucl:TwoStepMode	       10	   # mode slection @ Knucl:TwoStep
 			       		   #  0: Sigma->Lambda conv. (1N/2N)
 			       		   #  1: YN->YN elastic (1N/2N)
 					   #  2: NN->NN elastic (2N)
@@ -134,7 +134,7 @@ FileInfo:FillLevel         	1	   # You can select fill level of final
 			    		   # please add this param. if you
 					   # would like to save output data
 #------------------------------------------#
-AnalysisInfo:Seed            external	   # %d (fix) / random
+AnalysisInfo:Seed            external	  
 #------------------------------------------#
 DataInfo:Comment             test          # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
