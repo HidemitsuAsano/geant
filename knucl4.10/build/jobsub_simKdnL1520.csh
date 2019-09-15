@@ -1,19 +1,19 @@
 #!/bin/tcsh -f
-set Version="3"
+set Version="1"
 #set DATADIR="/group/had/knucl/e15/data/Run78/"
 set OUTDIR="/group/had/knucl/e15/asano/sim/"
 #set KWSKDIR="/group/had/knucl/e15/shinngo/Run78/evtracking/"
 
 set logbasedir="/home/had/hiasano/logs/"
 set date=`date +%Y%m%d_%H%M`
-set logdir="${logbasedir}${date}_sim"
+set logdir="${logbasedir}${date}_simnL1520"
 echo "log files  ${logdir}"
 
 if( ! -d $logdir) then 
   mkdir -p  $logdir
 endif 
 
-set OUTDIRSUB="${OUTDIR}simK0nn${Version}"
+set OUTDIRSUB="${OUTDIR}simnL1520${Version}"
 if( ! -d $OUTDIRSUB) then 
  mkdir -p $OUTDIRSUB
 endif
@@ -26,18 +26,18 @@ while ($i < 400)
 
   set EXEC___="./knucl"
   set CONF___="conf/Run78/analyzer_kwsk_sim.conf"
-  set CARD___="KnuclSetting_K0nn.card"
+  set CARD___="KnuclSetting_nL1520.card"
   set MAC___="run.mac"
   set jobnum=`printf  "%03d"  $i`
 
   #set INPFILE=${DATADIR}"run78_0${jobnum}.dat"
-  set OUTFILE=${OUTDIRSUB}"/sim_K0nn_0${jobnum}.root"
+  set OUTFILE=${OUTDIRSUB}"/sim_nL1520_0${jobnum}.root"
   #set CDSFILE=${KWSKDIR}"run78_0${jobnum}_evtracking.root"
 
   #echo ${INPFILE}
   echo ${OUTFILE}
   #echo ${CDSFILE}
-  
+
   set logname = "${logdir}/run$i.log"
   bsub -o $logname -q l ${EXEC___} ${CARD___} ${MAC___} ${OUTFILE} ${jobnum}
     @ i ++

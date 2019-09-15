@@ -1,5 +1,5 @@
 #!/bin/tcsh -f
-set Version="4"
+set Version="6"
 #set DATADIR="/group/had/knucl/e15/data/Run78/"
 set OUTDIR="/group/had/knucl/e15/asano/sim/"
 #set KWSKDIR="/group/had/knucl/e15/shinngo/Run78/evtracking/"
