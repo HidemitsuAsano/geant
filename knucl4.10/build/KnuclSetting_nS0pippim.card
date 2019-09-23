@@ -118,7 +118,7 @@ TargetInfo:TargetLength      240.0         # Unit in [mm]
 #------------------------------------------#
 #FileInfo:InputDataFile       test.dat	   #
 #FileInfo:OutputRootFile      test_mc.root  #
-FileInfo:FillLevel         	4	   # You can select fill level of final
+FileInfo:FillLevel         	1	   # You can select fill level of final
 					   # tracks.
 					   #  0: CDH/CDC/PC/NC tracks only
 					   #  1: + parent tracks
