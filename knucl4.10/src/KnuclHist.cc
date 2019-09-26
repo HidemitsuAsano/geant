@@ -12,7 +12,7 @@ KnuclHist::~KnuclHist()
 void KnuclHist::BeginOfRunAction(const char *filename)
 {
   rootfile=new TFile(filename,"RECREATE");
-  rootfile->SetCompressionLevel(9);
+  //rootfile->SetCompressionLevel(9);
 
   //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%//
   // tree
