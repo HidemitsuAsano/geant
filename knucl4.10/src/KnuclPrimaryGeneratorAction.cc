@@ -91,11 +91,11 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
   gen = new TGenPhaseSpace();
   reactionData = new ReactionData();
   //temporary using "K3He" flag for E31 mc.from Knucl:ProcessID
-  if (anaManager->GetProcessID()==KnuclAnaManager::K3He ){
+  //if (anaManager->GetProcessID()==KnuclAnaManager::K3He ){
     csTable  = new CrossSectionTable(ana->GetCSFileName(), ana->GetBeamMomentum()*GeV);
     PrintAllCS();
     ana->SetCSTable(*csTable);
-  }
+  //}
   int csID = csTable->CS(0).Id();
   std::cout << __FILE__ << " L." << __LINE__ << " csID: " << csID << std::endl;
   TFile *genfile = NULL;
@@ -155,7 +155,8 @@ void KnuclPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   G4double mass;
   if (anaManager->GetProcessID()==KnuclAnaManager::Single ||
-      anaManager->GetProcessID()==KnuclAnaManager::Beam ){
+      anaManager->GetProcessID()==KnuclAnaManager::Beam ||
+      anaManager->GetProcessID()==KnuclAnaManager::neutron_efficiency_mode ){
     TString name = anaManager->GetSingleParticle();
     if( '0'<=name[1] && name[1]<='9' ){
       mass = particleTable->FindParticle(atoi(name.Data()))->GetPDGMass();
@@ -244,6 +245,13 @@ void KnuclPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     //std::cout<<"(px, py, pz) = ("<<mom.x()<<" , "<<mom.y()<<" , "<<" , "<<mom.z()<<")"<<std::endl;
     //std::cout<<"beam_ene-mass = "<<beam_ene-mass<<std::endl;
     // getchar();
+  
+    reactionData->Init();
+    reactionData->SetPDG(particleGun->GetParticleDefinition()->GetPDGEncoding());
+    reactionData->SetParticle( mom.x(), mom.y(), mom.z(), mass );
+    anaManager->setHistReactionData(reactionData);
+  
+  
   }
   else if (anaManager->GetProcessID()==KnuclAnaManager::Beam ||
 	   anaManager->GetProcessID()==KnuclAnaManager::K3He ){
@@ -736,7 +744,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
       in1_pdg_cand.push_back(-321); // K-
     }
     //Added by Asano
-    else if( mode_ts==30){//K-p -> K0n(1st), n-n elastic in E31
+    else if( mode_ts==30){//K-p -> K0n(1st) -> n-n elastic (2nd) in E31
       in1_pdg_cand.push_back(2112);//n
     }
     //Added by Asano
@@ -791,7 +799,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
 	  }
 	}//Sigma case end
       }
-      else if( mode_ts==1 || mode_ts==2 ){
+      else if( mode_ts==1 || mode_ts==2 || mode_ts==10 ){
 	particle_ts.push_back(particleTable->FindParticle(in1_pdg));
 	particle_ts.push_back(particleTable->FindParticle(in2_pdg));
       }
