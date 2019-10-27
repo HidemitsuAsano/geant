@@ -66,8 +66,8 @@ Single:Particle	             2112	   # particle name
 Single:Momentum_MIN          0.01	   # momentum of the single particle
 Single:Momentum_MAX          1.0	   # unit in [GeV/c]
 			     		   #
-Single:Theta_MIN             1.0	   # theta angle of the single particle
-Single:Theta_MAX             1.0	   # unit in Cosine theta
+Single:Theta_MIN             0.0	   # theta angle of the single particle
+Single:Theta_MAX             0.00001	   # unit in Cosine theta
 			     		   #
 Single:Vertex_MIN    0.0 0.0 0.0   # 3D vertex pos., unit in [mm]
 Single:Vertex_MAX    0.0 0.0 0.0	 # 3D vertex pos., unit in [mm]
@@ -117,7 +117,7 @@ TargetInfo:TargetLength      240.0         # Unit in [mm]
 #------------------------------------------#
 #FileInfo:InputDataFile       test.dat	   #
 #FileInfo:OutputRootFile      test_mc.root  #
-FileInfo:FillLevel         	4	   # You can select fill level of final
+FileInfo:FillLevel         	1	   # You can select fill level of final
 					   # tracks.
 					   #  0: CDH/CDC/PC/NC tracks only
 					   #  1: + parent tracks

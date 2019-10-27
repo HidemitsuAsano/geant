@@ -15,7 +15,7 @@ Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_S0pipi_ns.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS_inoue/kd_L1520pi0_ns.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -31,7 +31,7 @@ Knucl:TwoStep		       0	   # 0: w/o 2-step reactions
 			       		   #  1: YN->YN elastic (1N/2N)
 					   #  2: NN->NN elastic (2N)
 					   #
-Knucl:BeamMomentum           1.010	   # Unit in [GeV/c]
+Knucl:BeamMomentum           1.005	   # Unit in [GeV/c]
 			     		   #
 #Knucl:BindingEnergy           50.0	   # in MeV
 			      		   #
