@@ -76,7 +76,7 @@ enum gCounterID { CID_CDC     = 0,
                   CID_LS      = 150
 };
 
-void K3He()
+void K3He(const char *filename="sim1/test.root")
 {
   gSystem->Load("./build/KnuclRootData_cc.so"); //<-- OR read from ./.rootlogon.C
   
@@ -89,7 +89,7 @@ void K3He()
   TDatabasePDG *pdg = new TDatabasePDG();
   pdg->ReadPDGTable("pdg_table.txt");
   
-  TFile *f = new TFile("ReacID_735.root");
+  TFile *f = new TFile(filename);
   TTree *tree = (TTree*)f->Get("tree");
   TTree *tree2 = (TTree*)f->Get("tree2");
 

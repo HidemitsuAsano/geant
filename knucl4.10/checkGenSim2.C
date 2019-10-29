@@ -1,4 +1,7 @@
-#define DALITZ 1
+#include <fstream.h>
+#include <iostream.h>
+
+#define DALITZ 0
 
 class RunHeader;
 class EventHeader;
@@ -73,17 +76,12 @@ enum gCounterID { CID_CDC     = 0,
                   CID_LS      = 150
 };
 
-void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
+void piS(const char *filename="")
 {
-  std::string outname = std::string(filename);
-  outname.insert(std::string(filename).size()-5,"_hist");
-  std::cout << outname << std::endl;
-
-  if(gSystem->Load("./build/KnuclRootData_cc.so")!=0) return; //<-- OR read from ./.rootlogon.C
+  gSystem->Load("./build/KnuclRootData_cc.so"); //<-- OR read from ./.rootlogon.C
   
   gROOT->SetStyle("Plain");
-  //gStyle->SetOptStat(111111);
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(111111);
   gStyle->SetOptFit(111111);
   
   gROOT->cd();
@@ -91,11 +89,12 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   TDatabasePDG *pdg = new TDatabasePDG();
   pdg->ReadPDGTable("pdg_table.txt");
   
+  //TFile *f = new TFile("ReacID_735.root");
+  //TFile *f = new TFile("kpp_50_50_Lp.root");
   TFile *f = new TFile(filename);
-  if(!f) return;
   TTree *tree = (TTree*)f->Get("tree");
   TTree *tree2 = (TTree*)f->Get("tree2");
-  TH1::SetDefaultSumw2();
+
   RunHeaderMC*    runHeaderMC=0;
   EventHeaderMC*  eventHeaderMC=0;
   DetectorData*   detectorData=0;
@@ -117,7 +116,6 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
     totalEv     += runHeaderMC->numEvent();
     generatedEv += runHeaderMC->numGenerated();
   }
-
   std::cerr<<"********************************"<<std::endl;
   std::cerr<<" seed                  = "<<runHeaderMC->seed()<<std::endl;
   std::cerr<<" # of total events     = "<<totalEv<<std::endl;
@@ -126,7 +124,7 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   std::cerr<<" # of generated events = "<<generatedEv<<std::endl;
   std::cerr<<" total CrossSection    = "<<totalCS<<" mb"<<std::endl;
   std::cerr<<"********************************"<<std::endl;
-  runHeaderMC->CStable().PrintAllCS();
+  //runHeaderMC->CStable().PrintAllCS();
 
 
   Int_t nevent = tree->GetEntries();
@@ -135,7 +133,7 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   const int    BIN = 1500.0;
   const double MIN = 0.0;
   const double MAX = 1500.0;
-  const double MAXF = 350.0;
+  const double MAXF = 300.0;
   const double MINT = -1.0;
   const double MAXT = 1.0;
   char com[128];
@@ -185,15 +183,7 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   TH1F* his99  = new TH1F("his99", "reactionID", 1120, 0, 1120);
   TH1F* his100 = new TH1F("his100", "reactionID", 1120, 0, 1120);
   TH1F* his101 = new TH1F("his101", "reactionID", 1120, 0, 1120);
-  //TH2F* hisd   = new TH2F("hisd", "Dalitz's plot", 44, -0.65, 0.65, 44, -0.05, 1.05);
-  TH1F* hiscos1_2_cm = new TH1F("hiscos1_2_cm","cos 1-2 c.m.",500,-1,1);
-  TH1F* hiscos1_2_lab = new TH1F("hiscos1_2_lab","cos 1-2 lab",500,-1,1);
-  TH1F* hiscos2_3_cm = new TH1F("hiscos2_3_cm","cos 2-3 c.m.",500,-1,1);
-  TH1F* hiscos2_3_lab = new TH1F("hiscos2_3_lab","cos 2-3 lab",500,-1,1);
-  TH1F* hiscos3_1_cm = new TH1F("hiscos3_1_cm","cos 3-1 c.m.",500,-1,1);
-  TH1F* hiscos3_1_lab = new TH1F("hiscos3_1_lab","cos 3-1 lab",500,-1,1);
-  TH2F* hiss   = new TH2F("hiss", "Phase Space IM{Sigma}", 500,1,2,300,0,1.5);
-  TH2F* hisd   = new TH2F("hisd", "Phase Space IM{Sigma pi}", 500,1,2,300,0,1.5);
+  TH2F* hisd   = new TH2F("hisd", "Dalitz's plot", 44, -0.65, 0.65, 44, -0.05, 1.05);
   TH2F* his_ipi = new TH2F("his_ipi", "initial pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_S   = new TH2F("his_S", "#Sigma momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
   TH2F* his_pi  = new TH2F("his_pi", "pi momentum vs. cos(#theta_{#pi}^{CM})", 80, MINT, MAXT, 150, 0, 1.5);
@@ -207,17 +197,12 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   //--- event roop start ---//
   //------------------------//
   cout<<"Start to fill histgrams. Entries = "<<nevent<<endl;
-  bool isstate=false;
   for (Int_t i=0; i<nevent; i++) {
     tree->GetEvent(i);
     // print information
     int ndecay    = reactionData->NParticle(0);
     int nspec     = reactionData->NParticle(1);
     int nparticle = ndecay+nspec;
-    if(!isstate){
-      std::cout << "nparticle:" << nparticle << std::endl;
-      isstate=true;
-    }
     if( i==0 ){
       for (Int_t j=0; j<2; j++) {
 	initname[j] = pdg->GetParticle(reactionData->InitPDG(j))->GetName(); 
@@ -242,6 +227,38 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
       cerr<<" ##############################################"<<endl;
     }
 
+    //### neutron from Sigma ###//
+    double cospi = reactionData->GetCMParticle(0).CosTheta();
+    double mom_S  = -1;
+    double mom_pi = -1;
+    double mom_n  = -1;
+    double theta_n  = -1;
+    double theta_pi = -1;
+    bool acc_flag = false;
+    for (Int_t j=0; j<mcData->trackSize(); j++) {
+      int track   = mcData->track(j)->trackID();
+      int pdgcode = mcData->track(j)->pdgID();
+      int parent  = mcData->track(j)->parentTrackID();
+      //cerr<<track<<" "<<pdgcode<<" "<<parent<<endl;
+      if( pdgcode==2112 && parent==3 ){ // neutron from Sigma
+	mom_n = mcData->track(j)->momentum().Mag()/1000;
+	theta_n = mcData->track(j)->momentum().Theta()*180/3.1415; // degrees
+      }
+      if( abs(pdgcode)==211 && parent==3 ){ // pi from Sigma
+	mom_pi = mcData->track(j)->momentum().Mag()/1000;
+	theta_pi = mcData->track(j)->momentum().Theta()*180/3.1415; // degrees
+      }
+    }
+    acc_flag = ( 54<theta_n && theta_n<126 && 54<theta_pi && theta_pi<126 );
+    his_ipi->Fill(cospi,reactionData->GetParticle(0).P()/1000);
+    his_S->Fill(cospi,reactionData->GetParticle(1).P()/1000);
+    his_pi->Fill(cospi,mom_pi);
+    his_n->Fill(cospi,mom_n);
+    if( acc_flag ){
+      his_pi_acc->Fill(cospi,mom_pi);
+      his_n_acc->Fill(cospi,mom_n);
+    }
+
     //### all events ###//
     for (Int_t j=0; j<nspec; j++) {
        his0[j]->Fill(reactionData->FermiMom(j));
@@ -251,158 +268,40 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
       his2[j]->Fill(reactionData->GetParticle(j).P());
       his3[j]->Fill(reactionData->GetCMParticle(j).CosTheta());
       his4[j]->Fill(reactionData->GetParticle(j).CosTheta());
-      //his5[j]->Fill(reactionData->GetParticle(j).CosTheta());
     }
     his99->Fill(reactionData->ReactionID());
 
-    int flagCDH = 0;
-    int flagNC = 0;
-    int flagCVCPC = 0;
-    for (Int_t j=0; j<detectorData->detectorHitSize(); j++) {
-      int cid = detectorData->detectorHit(j)->detectorID();
-      int pdgcode = detectorData->detectorHit(j)->pdg();
-      if( pdgcode>10000000 ) continue;
-      //if( pdgcode == 2112 ) cerr<<cid<<endl;
-      //cerr<<cid<<" "<<pdgcode<<endl;
-      if( cid == CID_CDH ){
-	if( pdg->GetParticle(pdgcode)->Charge() ) flagCDH++;
+    //### in CDH acceptance ###//    
+    double weight = 1;
+    if( acc_flag  ){
+      //std::cerr<<CDHhit[0]<<":"<<part[0]<<" "<<CDHhit[1]<<":"<<part[1]<<std::endl;
+      for (Int_t j=0; j<nparticle; j++) {
+	his10[j]->Fill(reactionData->GetCMParticle(j).P(), weight);
+	his20[j]->Fill(reactionData->GetParticle(j).P(), weight);
+	his30[j]->Fill(reactionData->GetCMParticle(j).CosTheta(), weight);
+	his40[j]->Fill(reactionData->GetParticle(j).CosTheta(), weight);
       }
-      else if( cid == CID_NC ){
-	if( pdgcode==2112 ) flagNC++;
-	//cerr<<pdgcode<<endl;
-      }
-      else if( cid == CID_CVC || cid == CID_PC ){
-	if( pdg->GetParticle(pdgcode)->Charge() ) flagCVCPC++;
-      }
+      his100->Fill(reactionData->ReactionID());
     }
 
-    //### CDH-1charged & NC-neutron ###//    
-    double weight = 1.;
-    if( flagCDH && flagNC ){
-      for (Int_t j=0; j<nspec; j++) {
-	his00[j]->Fill(reactionData->TmpVal(j), weight);
-      }
-     for (Int_t j=0; j<nparticle; j++) {
-       his10[j]->Fill(reactionData->GetCMParticle(j).P(), weight);
-       his20[j]->Fill(reactionData->GetParticle(j).P(), weight);
-       his30[j]->Fill(reactionData->GetCMParticle(j).CosTheta(), weight);
-       his40[j]->Fill(reactionData->GetParticle(j).CosTheta(), weight);
-     }
-     his100->Fill(reactionData->ReactionID());
-    }
-
-    //### CDH-1charged & CVC/PC-charged ###//    
-    if( flagCDH && flagCVCPC ){
-      for (Int_t j=0; j<nspec; j++) {
-	his01[j]->Fill(reactionData->TmpVal(j), weight);
-      }
-     for (Int_t j=0; j<nparticle; j++) {
-       his11[j]->Fill(reactionData->GetCMParticle(j).P(), weight);
-       his21[j]->Fill(reactionData->GetParticle(j).P(), weight);
-       his31[j]->Fill(reactionData->GetCMParticle(j).CosTheta(), weight);
-       his41[j]->Fill(reactionData->GetParticle(j).CosTheta(), weight);
-     }
-     his101->Fill(reactionData->ReactionID());
-    }
-
-#if DALITZ
-    /* original 
-    // Dalitz's plot
-    double T[3];
-    for(int j=0; j<nparticle; j++){
-      double ene = reactionData->GetCMParticle(j).E();
-      double mass = pdg->GetParticle(reactionData->PDG(j))->Mass();
-      mass *= 1000;
-      T[j] = ene-mass;
-    }
-    double Q = T[0]+T[1]+T[2];
-    double x = (T[1]-T[0])/(sqrt(3)*Q);
-    double y = T[2]/Q;
-    hisd->Fill(x,y);
-    */
-    // Dalitz's plot
-    double T[3];
-    TLorentzVector TL_piSigma;
-    TLorentzVector TL_nmiss;
-    /*
-    for(int j=0; j<nparticle; j++){
-      double ene = reactionData->GetCMParticle(j).E();
-      double mass = pdg->GetParticle(reactionData->PDG(j))->Mass();
-      //TVector3 mom = reactionData->GetCMParticle(j).P();
-      mass *= 1000;
-    }*/
-    //1: sigma ,2 :pion 3 neutron
-    TLorentzVector TL_Sigma;
-    TL_Sigma = reactionData->GetParticle(1);
-    TL_piSigma = TL_Sigma+reactionData->GetParticle(2);
-    TL_nmiss = reactionData->GetParticle(0);
-    //std::cout << TL_nmiss.M() << std::endl;
-    //std::cout << reactionData->GetCMParticle(1).M()<<std::endl;
-    TLorentzVector TL_beam;
-    TVector3 beammom(0,0,1000.);
-    TL_beam.SetVectM(beammom, 493.);
-    double q = (TL_beam.Vect()-TL_nmiss.Vect()).Mag();
-    //TLorentzVector TL_sum = TL_gene[0]+TL_gene[1]+TL_gene[2];
-    //double Q = T[0]+T[1]+T[2];
-    //double x = (T[1]-T[0])/(sqrt(3)*Q);
-    //double y = T[2]/Q;
-    double mass = TL_piSigma.M();
-    //std::cout << mass << " " << q << std::endl;
-    hiss->Fill(TL_Sigma.M()/1000.,q/1000.);
-    double ncos = reactionData->GetCMParticle(0).CosTheta();
-    double thetacm_1 = reactionData->GetCMParticle(0).Theta();
-    double thetacm_2 = reactionData->GetCMParticle(1).Theta();
-    double thetacm_3 = reactionData->GetCMParticle(2).Theta();
-    double costhetacm_12 = cos(thetacm_1-thetacm_2);
-    double costhetacm_23 = cos(thetacm_2-thetacm_3);
-    double costhetacm_31 = cos(thetacm_3-thetacm_1);
-    
-    double thetalab_1 = reactionData->GetParticle(0).Theta();
-    double thetalab_2 = reactionData->GetParticle(1).Theta();
-    double thetalab_3 = reactionData->GetParticle(2).Theta();
-    double costhetalab_12 = cos(thetalab_1-thetalab_2);
-    double costhetalab_23 = cos(thetalab_2-thetalab_3);
-    double costhetalab_31 = cos(thetalab_3-thetalab_1);
-    hiscos1_2_cm->Fill(costhetacm_12);
-    hiscos1_2_lab->Fill(costhetalab_12);
-    hiscos2_3_cm->Fill(costhetacm_23);
-    hiscos2_3_lab->Fill(costhetalab_23);
-    hiscos3_1_cm->Fill(costhetacm_31);
-    hiscos3_1_lab->Fill(costhetalab_31);
-    //double weight = ncos+1;
-    //if(0.85 < ncos && ncos<1 ) 
-    hisd->Fill(mass/1000.,q/1000.);
-#endif
   }// for (Int_t i=0;i<nevent;i++) {
   cout<<"end of filling"<<endl;
   //----------------------//
   //--- event roop end ---//
   //----------------------//
 
-  int Nall = his99->GetEntries();
-  int Nnc  = his100->GetEntries();
-  int Npc  = his101->GetEntries();
-  double acc_nc = double(Nnc)/Nall;
-  double acc_pc = double(Npc)/Nall;
-  cout<<"acceptance:"<<endl;
-  cout<<" CDH-1charged & NC-neutron     = "<<acc_nc<<endl;
-  cout<<" CDH-1charged & CVC/PC-charged = "<<acc_pc<<endl;
-
-
-
 
 
   //--- plot ---//
-  //gStyle->SetOptStat(111111);
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(111111);
   gStyle->SetOptFit(0);
 
   TLatex *tex;
 
   //### plot reaction-ID
-  TCanvas *c1 = new TCanvas("c1", "", 1200, 400);
-  c1->Divide(3,1);
-  c1->cd(1); his99->Draw("HE");
+  TCanvas *c1 = new TCanvas("c1", "", 800, 400);
+  c1->Divide(2,1);
+  c1->cd(1); his99->Draw("");
   his99->SetXTitle("reactionID [CERN-HERA-83-02]");
   int max = his99->GetMaximum();
   tex = new TLatex(MINT+0.05*(MAXT-MINT), max*0.9, "All events");
@@ -410,125 +309,55 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
   tex->SetTextSize(0.05);
   tex->Draw();
 
-  c1->cd(2); his100->Draw("HE");
+  c1->cd(2); his100->Draw("");
   his100->SetXTitle("reactionID [CERN-HERA-83-02]");
   his100->SetLineColor(2);
   int max = his100->GetMaximum();
-  tex = new TLatex(MINT+0.05*(MAXT-MINT), max*0.9, "CDH-1charged & NC-neutron");
+  tex = new TLatex(MINT+0.05*(MAXT-MINT), max*0.9, "CDH-2charged");
   tex->SetTextColor(2);
   tex->SetTextSize(0.05);
   tex->Draw();
+  c1->Print("tmp.pdf(");
 
-  c1->cd(3); his101->Draw("HE");
-  his101->SetXTitle("reactionID [CERN-HERA-83-02]");
-  his101->SetLineColor(4);
-  int max = his101->GetMaximum();
-  tex = new TLatex(MINT+0.05*(MAXT-MINT), max*0.9, "CDH-1charged & CVC/PC-charged");
-  tex->SetTextColor(4);
-  tex->SetTextSize(0.05);
-  tex->Draw();
-  //c1->Print("tmp1.pdf");
-  //c1->Print("tmp1.png");
-
-  //### plot Fermi Momentum
-  FermiFlag = 1;
-  if( FermiFlag ){
-    TCanvas *c2 = new TCanvas("c2", "", 800, 400);
-    c2->Divide(2,1);
-    for( int i=0; i<nspec; i++ ){
-      c2->cd(i+1); his0[i]->Draw("HE");
-      his0[i]->SetXTitle("momentum [MeV/c]");
-      int max = his0[i]->GetMaximum();
-      tex = new TLatex(MIN+0.05*(MAXF-MIN), max*0.9, name[i+ndecay].c_str());
-      tex->SetTextColor(4);
-      tex->SetTextSize(0.1);
-      tex->Draw();
-      his00[i]->Draw("HEsame"); his00[i]->SetLineColor(2);
-      his01[i]->Draw("HEsame"); his01[i]->SetLineColor(4);
-    }
-    //c2->Print("tmp2.pdf");
-    //c2->Print("tmp2.png");
-  }
 
   //### plot particle momentum @ CM
-  TCanvas *c3 = new TCanvas("c3", "", 900, 600);
-  c3->Divide(3,2);
+  TCanvas *c3 = new TCanvas("c3", "", 800, 400);
+  c3->Divide(2,1);
   for( int i=0; i<nparticle; i++ ){
-    c3->cd(i+1); his1[i]->Draw("HE");
+    c3->cd(i+1); his1[i]->Draw("");
     his1[i]->SetXTitle("momentum [MeV/c]");
     int max = his1[i]->GetMaximum();
     tex = new TLatex(MIN+0.05*(MAX-MIN), max*0.9, name[i].c_str());
     tex->SetTextColor(4);
     tex->SetTextSize(0.1);
     tex->Draw();
-    //his10[i]->Draw("same"); his10[i]->SetLineColor(2);
-    //his11[i]->Draw("same"); his11[i]->SetLineColor(4);
+    his10[i]->Draw("same"); his10[i]->SetLineColor(2);
+    his11[i]->Draw("same"); his11[i]->SetLineColor(4);
   }
-  //c3->Print("tmp3.pdf");
-  //c3->Print("tmp3.png");
+  c3->Print("tmp.pdf");
 
   //### plot particle momentum @ LAB
-  TCanvas *c4 = new TCanvas("c4", "", 900, 600);
-  c4->Divide(3,2);
+  TCanvas *c4 = new TCanvas("c4", "", 800, 400);
+  c4->Divide(2,1);
   for( int i=0; i<nparticle; i++ ){
-    c4->cd(i+1); his2[i]->Draw("HE"); //gPad->SetLogy();
+    c4->cd(i+1); his2[i]->Draw(""); //gPad->SetLogy();
     his2[i]->SetXTitle("momentum [MeV/c]");
     int max = his2[i]->GetMaximum();
     tex = new TLatex(MIN+0.05*(MAX-MIN), max*0.9, name[i].c_str());
     tex->SetTextColor(4);
     tex->SetTextSize(0.1);
     tex->Draw();
-    //his20[i]->Draw("same"); his20[i]->SetLineColor(2);
-    //his21[i]->Draw("same"); his21[i]->SetLineColor(4);
+    his20[i]->Draw("same"); his20[i]->SetLineColor(2);
+    his21[i]->Draw("same"); his21[i]->SetLineColor(4);
   }
-  //c4->Print("tmp4.pdf");
-  //c4->Print("tmp4.png");
-
-#if DALITZ
-  // Dalitz's plot
-  TLine* line1 = new TLine(0, 1, -1/sqrt(3), 0);
-  line1->SetLineColor(4);
-  TLine* line2 = new TLine(-1/sqrt(3), 0, 1/sqrt(3), 0);
-  line2->SetLineColor(4);
-  TLine* line3 = new TLine(1/sqrt(3), 0, 0, 1);
-  line3->SetLineColor(4);
-
-  TCanvas *c5 = new TCanvas("c5", "");
-  hisd->SetXTitle("IM(#pi#Sigma) [GeV/c^{2}]");
-  hisd->SetYTitle("mom. transfer [GeV/c]");
-  hisd->GetXaxis()->CenterTitle();
-  hisd->GetYaxis()->CenterTitle();
-  hisd->Draw("colz");
-  
-  TCanvas *c8 = new TCanvas("c8","c8");
-  c8->Divide(3,2);
-  c8->cd(1);
-  hiscos1_2_cm->Draw();
-  c8->cd(4);
-  hiscos1_2_lab->Draw();
-  
-  c8->cd(2);
-  hiscos2_3_cm->Draw();
-  c8->cd(5);
-  hiscos2_3_lab->Draw();
-  
-  c8->cd(3);
-  hiscos3_1_cm->Draw();
-  c8->cd(6);
-  hiscos3_1_lab->Draw();
-  
-  //hisd->SetXTitle("(T_{decay2}-T_{decay1})/#sqrt{3}Q");
-  //hisd->SetYTitle("T_{deuteron}/Q");
-  //line1->Draw(); line2->Draw(); line3->Draw();
-  //c5->Print("tmp5.pdf");
-  //c5->Print("tmp5.png");
-#endif
+  c4->Print("tmp.pdf");
 
   //### plot angular distribution @ CM
-  TCanvas *c6 = new TCanvas("c6", "", 900, 600);
-  c6->Divide(3,2);
+  TCanvas *c6 = new TCanvas("c6", "", 800, 400);
+  c6->Divide(2,1);
   for( int i=0; i<nparticle; i++ ){
-    c6->cd(i+1); his3[i]->Draw("HE");
+    c6->cd(i+1); his3[i]->Draw("");
+    his3[i]->SetStats(0);
     his3[i]->SetMinimum(0);
     his3[i]->SetXTitle("cos#theta");
     int max = his3[i]->GetMaximum();
@@ -536,17 +365,18 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
     tex->SetTextColor(4);
     tex->SetTextSize(0.1);
     tex->Draw();
-    //his30[i]->Draw("same"); his30[i]->SetLineColor(2);
-    //his31[i]->Draw("same"); his31[i]->SetLineColor(4);
+    his30[i]->Draw("same"); his30[i]->SetLineColor(2);
+    his31[i]->Draw("same"); his31[i]->SetLineColor(4);
   }
-  //c6->Print("tmp6.pdf");
+  c6->Print("tmp.pdf");
   //c6->Print("tmp6.png");
 
-  //### plot angular distribution @ CM
-  TCanvas *c7 = new TCanvas("c7", "", 900, 600);
-  c7->Divide(3,2);
+  //### plot angular distribution @ LAB
+  TCanvas *c7 = new TCanvas("c7", "", 800, 400);
+  c7->Divide(2,1);
   for( int i=0; i<nparticle; i++ ){
-    c7->cd(i+1); his4[i]->Draw("HE");
+    c7->cd(i+1); his4[i]->Draw("");
+    his4[i]->SetStats(0);
     his4[i]->SetMinimum(0);
     his4[i]->SetXTitle("cos#theta");
     int max = his4[i]->GetMaximum();
@@ -554,16 +384,59 @@ void checkGenSim(const char *filename="sim2/sim_nSmpip_0000.root")
     tex->SetTextColor(4);
     tex->SetTextSize(0.1);
     tex->Draw();
-    //his40[i]->Draw("same"); his40[i]->SetLineColor(2);
-    //his41[i]->Draw("same"); his41[i]->SetLineColor(4);
+    his40[i]->Draw("same"); his40[i]->SetLineColor(2);
+    his41[i]->Draw("same"); his41[i]->SetLineColor(4);
   }
+  c7->Print("tmp.pdf");
 
-  TFile *fout = new TFile(outname.c_str(),"RECREATE");
-  fout->cd();
-  hiss->Write();
-  hisd->Write();
-  fout->Close();
-  return;
-  //c7->Print("tmp7.pdf");
-  //c7->Print("tmp7.png");
+
+
+  TCanvas *c8 = new TCanvas("c8", "", 800, 400);
+  c8->Divide(2,1);
+  c8->cd(1); his_pi->Draw("colz"); gPad->SetGrid();
+  his_pi->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_pi->SetYTitle("#pi from #Sigma momentum [GeV/c]");
+  c8->cd(2); his_n->Draw("colz"); gPad->SetGrid();
+  his_n->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_n->SetYTitle("n from #Sigma momentum [GeV/c]");
+  c8->Print("tmp.pdf");
+
+  TCanvas *c9 = new TCanvas("c9", "", 800, 400);
+  c9->Divide(2,1);
+  c9->cd(1); his_pi_acc->Draw("colz"); gPad->SetGrid();
+  his_pi_acc->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_pi_acc->SetYTitle("#pi from #Sigma momentum [GeV/c]");
+  c9->cd(2); his_n_acc->Draw("colz"); gPad->SetGrid();
+  his_n_acc->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_n_acc->SetYTitle("n from #Sigma momentum [GeV/c]");
+  c9->Print("tmp.pdf");
+
+
+  TCanvas *c10 = new TCanvas("c10", "", 1200, 400);
+  c10->SetGrid();
+  c10->Divide(3,1);
+  int sta = 69;
+  int bin = 4;
+  for( int i=0; i<3; i++ ){
+    c10->cd(i+1);
+    double a = sta+i*bin;
+    double b = sta+(i+1)*bin-1;
+    double aa = a*0.025-1;
+    double bb = b*0.025-1;
+    sprintf(com, "%0.1f-%0.1f", aa, bb);
+    his_n_acc->ProjectionY(com, a, b)->Draw();
+  }
+  c10->Print("tmp.pdf");
+
+
+  TCanvas *c11 = new TCanvas("c11", "", 800, 400);
+  c11->Divide(2,1);
+  c11->cd(1); his_ipi->Draw("colz"); gPad->SetGrid();
+  his_ipi->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_ipi->SetYTitle("initial #pi momentum [GeV/c]");
+  c11->cd(2); his_S->Draw("colz"); gPad->SetGrid();
+  his_S->SetXTitle("cos#theta_{#pi}^{CM}");
+  his_S->SetYTitle("#Sigma momentum [GeV/c]");
+  c11->Print("tmp.pdf)");
+
 }
