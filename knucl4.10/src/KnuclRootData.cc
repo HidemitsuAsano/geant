@@ -8,6 +8,8 @@ DetectorHit::DetectorHit()
   init();
 }
 
+//Asano memo
+//dAdc and dDe are always same
 void DetectorHit::init()
 {
   nHitID      = DEFVALI;
