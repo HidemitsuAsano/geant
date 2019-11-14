@@ -91,11 +91,13 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
   gen = new TGenPhaseSpace();
   reactionData = new ReactionData();
   //temporary using "K3He" flag for E31 mc.from Knucl:ProcessID
-  //if (anaManager->GetProcessID()==KnuclAnaManager::K3He ){
+  if (anaManager->GetProcessID()==KnuclAnaManager::K3He || 
+      anaManager->GetProcessID()==KnuclAnaManager::Single
+  ){
     csTable  = new CrossSectionTable(ana->GetCSFileName(), ana->GetBeamMomentum()*GeV);
     PrintAllCS();
     ana->SetCSTable(*csTable);
-  //}
+  }
   int csID = csTable->CS(0).Id();
   std::cout << __FILE__ << " L." << __LINE__ << " csID: " << csID << std::endl;
   TFile *genfile = NULL;
@@ -170,7 +172,8 @@ void KnuclPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     mass = particleTable->FindParticle("kaon+")->GetPDGMass();
     particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="kaon+"));
   }
-  else if (anaManager->GetProcessID()==KnuclAnaManager::neutron_efficiency_mode){
+  
+  if (anaManager->GetProcessID()==KnuclAnaManager::neutron_efficiency_mode){
     particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="neutron"));
     mass = particleTable->FindParticle("neutron")->GetPDGMass();
   }
@@ -199,7 +202,8 @@ void KnuclPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double px = 0;
   G4double py = 0;
   G4double pz = 0;
-
+  
+  /*
   if (anaManager->GetProcessID()==KnuclAnaManager::neutron_efficiency_mode){
     //  if (1){
     beam_ene = sqrt(beam_mom*beam_mom + mass*mass);
@@ -215,8 +219,10 @@ void KnuclPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     particleGun->SetParticleTime(0.0);
     particleGun->SetParticleEnergy(beam_ene-mass);
     particleGun->GeneratePrimaryVertex(anEvent);
-  }
-  else if (anaManager->GetProcessID()==KnuclAnaManager::Single){
+  }*/
+  
+  if (anaManager->GetProcessID()==KnuclAnaManager::Single ||
+      anaManager->GetProcessID()==KnuclAnaManager::neutron_efficiency_mode ){
     BeamMomentum = CLHEP::RandFlat::shoot(anaManager->GetSingleMomentumMIN(),
 					  anaManager->GetSingleMomentumMAX())*GeV;
     beam_ene = sqrt(BeamMomentum*BeamMomentum + mass*mass);
@@ -735,7 +741,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
       in1_pdg_cand.push_back(-311); // K0bar
     } else if( mode_ts==4 ){ // K*-n->K0Xi-
       in1_pdg_cand.push_back(-323); // K*-
-    } else if( mode_ts==10 ){ // K-/0 N elastic
+    } else if( mode_ts==10  || mode_ts==11){ // K-/0 N elastic
       in1_pdg_cand.push_back(-311); // K0bar
       in1_pdg_cand.push_back(-321); // K-
     } // Add by Inoue
@@ -755,114 +761,123 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
       std::cout<<"!!!!! unknown two step mode !!!!! "<<mode_ts<<std::endl;
       exit(0);
     }
-
+    
+    //asano memo.
+    //in two-step mode, FindlPdg(i) stores the output particle of the 1st step reaction
+    //in1_id stores the index of the output particle
     for( int i=0; i<nFinl; i++ ){
       int pdg = cs.FinlPdg(i);
       for( unsigned int j=0; j<in1_pdg_cand.size(); j++ ){
-	if( pdg==in1_pdg_cand[j] ){
-	  flag_ts = true;
-	  in1_id  = i;
-	  in1_pdg = pdg;
-	}
+        if( pdg==in1_pdg_cand[j] ){
+          flag_ts = true;
+          in1_id  = i;
+          in1_pdg = pdg;
+        }
       }
     }
 
     //--- particle selection ---//
     //asano memo
     //set final products produced by 2nd step
+    //
     std::vector <G4ParticleDefinition*> particle_ts;
     if( flag_ts ){
       if( mode_ts==0 ){
-	particle_ts.push_back(particleTable->FindParticle(3122)); // final hyperon is Lambda
-	// --- Sigma+ case --- // *** NO Sigma+ p
-	if( in1_pdg==3222 ){
-	  if( in2_pdg==2112 ){ // Sigma+ n -> Lambda p
-	    particle_ts.push_back(particleTable->FindParticle(2212));
-	  }
-	  else if( in2_pdg==1000010020 ){ // Sigma+ d -> Lambda p p
-	    particle_ts.push_back(particleTable->FindParticle(2212));
-	    particle_ts.push_back(particleTable->FindParticle(2212));
-	  }
-	}
-	// --- Sigma0 case --- //
-	else if( in1_pdg==3212 ){
-	  particle_ts.push_back(particleTable->FindParticle(in2_pdg)); // Sigma0 X -> Lambda X;
-	}
-	// --- Sigma- case --- // *** NO Sigma- n
-	else if( in1_pdg==3112 ){
-	  if( in2_pdg==2212 ){ // Sigma- p -> Lambda n
-	    particle_ts.push_back(particleTable->FindParticle(2112));
-	  }
-	  else if( in2_pdg==1000010020 ){ // Sigma- d -> Lambda n n
-	    particle_ts.push_back(particleTable->FindParticle(2112));
-	    particle_ts.push_back(particleTable->FindParticle(2112));
-	  }
-	}//Sigma case end
+        particle_ts.push_back(particleTable->FindParticle(3122)); // final hyperon is Lambda
+        // --- Sigma+ case --- // *** NO Sigma+ p
+        if( in1_pdg==3222 ){
+          if( in2_pdg==2112 ){ // Sigma+ n -> Lambda p
+            particle_ts.push_back(particleTable->FindParticle(2212));
+          }
+          else if( in2_pdg==1000010020 ){ // Sigma+ d -> Lambda p p
+            particle_ts.push_back(particleTable->FindParticle(2212));
+            particle_ts.push_back(particleTable->FindParticle(2212));
+          }
+        }
+        // --- Sigma0 case --- //
+        else if( in1_pdg==3212 ){
+          particle_ts.push_back(particleTable->FindParticle(in2_pdg)); // Sigma0 X -> Lambda X;
+        }
+        // --- Sigma- case --- // *** NO Sigma- n
+        else if( in1_pdg==3112 ){
+          if( in2_pdg==2212 ){ // Sigma- p -> Lambda n
+            particle_ts.push_back(particleTable->FindParticle(2112));
+          }
+          else if( in2_pdg==1000010020 ){ // Sigma- d -> Lambda n n
+            particle_ts.push_back(particleTable->FindParticle(2112));
+            particle_ts.push_back(particleTable->FindParticle(2112));
+          }
+        }//Sigma case end
       }
       else if( mode_ts==1 || mode_ts==2 || mode_ts==10 ){
-	particle_ts.push_back(particleTable->FindParticle(in1_pdg));
-	particle_ts.push_back(particleTable->FindParticle(in2_pdg));
+        particle_ts.push_back(particleTable->FindParticle(in1_pdg));
+        particle_ts.push_back(particleTable->FindParticle(in2_pdg));
       }
       else if( mode_ts==3 ){ // K-p->K0n => K0ds->Lp only
-	particle_ts.push_back(particleTable->FindParticle(3122)); // Lambda
-	particle_ts.push_back(particleTable->FindParticle(2212)); // p
+        particle_ts.push_back(particleTable->FindParticle(3122)); // Lambda
+        particle_ts.push_back(particleTable->FindParticle(2212)); // p
       }
       else if( mode_ts==4 ){//  K*-n->K0Xi-
-	particle_ts.push_back(particleTable->FindParticle(311)); // K0
-	particle_ts.push_back(particleTable->FindParticle(3312)); // Xi-
+        particle_ts.push_back(particleTable->FindParticle(311)); // K0
+        particle_ts.push_back(particleTable->FindParticle(3312)); // Xi-
       }
       //Added by Asano
+      //K-n -> K-n (elastic) ps (1st), K-p -> K0n (2nd)
+      else if( mode_ts==11){
+        particle_ts.push_back(particleTable->FindParticle(-311));
+        particle_ts.push_back(particleTable->FindParticle(2112));
+      }
       else if( mode_ts==30 ){//K-p -> K0n(1st), n-n elastic in E31  
-  particle_ts.push_back(particleTable->FindParticle(2112));
-  particle_ts.push_back(particleTable->FindParticle(2112));
+        particle_ts.push_back(particleTable->FindParticle(2112));
+        particle_ts.push_back(particleTable->FindParticle(2112));
       }
       else if( mode_ts==40){//K0n -> pi+pi-Lambda (2nd) 
-  particle_ts.push_back(particleTable->FindParticle(-211));
-  particle_ts.push_back(particleTable->FindParticle(211));
-  particle_ts.push_back(particleTable->FindParticle(3122));
+        particle_ts.push_back(particleTable->FindParticle(-211));
+        particle_ts.push_back(particleTable->FindParticle(211));
+        particle_ts.push_back(particleTable->FindParticle(3122));
       }
-    } // if( flag_ts ){
+    } // if( flag_ts )
 
     //--- reaction and fill ---//
     if( 1<particle_ts.size() ){
       G4LorentzVector in1, in2;
-      in1.setVectM(vec[in1_id], mass[in1_id]);
-      in2.setVectM(vec[nFinl],  mass[nFinl]);
+      in1.setVectM(vec[in1_id], mass[in1_id]);//output of 1st step, incoming to 2nd step reaction in CM frame (beam + target frame)
+      in2.setVectM(vec[nFinl],  mass[nFinl]);//nFinl = # of particles in final state of 1st step, spectator neutron in E31 case in CM frame (beam + target frame)
       G4ThreeVector boost_ts = (in1+in2).boostVector();
-      G4double CMmass_ts  = (in1+in2).m();
+      G4double CMmass_ts  = (in1+in2).m();//cm mass of 2nd step reaction
       
-      G4int nBody_ts = particle_ts.size();
-      G4double      mass_ts[3];
-      G4ThreeVector vec_ts[3];
+      G4int nBody_ts = particle_ts.size();//
+      G4double      mass_ts[3];//
+      G4ThreeVector vec_ts[3];//mom. vec. in lab frame
       while( true ){
-	G4double sum_ts = 0;
-	//std::cerr<<nBody_ts<<std::endl;
-	for( int i=0; i<nBody_ts; i++ ){
-	  mass_ts[i] = GetMass(*particle_ts[i]);
-	  vec_ts[i]  = G4ThreeVector(0,0,0);
-	  sum_ts += mass_ts[i];
-	  //std::cerr<<particle_ts[i]->GetParticleName()<<" "<<mass_ts[i]<<std::endl;
-	}
+        G4double sum_ts = 0;
+        //std::cerr<<nBody_ts<<std::endl;
+        for( int i=0; i<nBody_ts; i++ ){
+          mass_ts[i] = GetMass(*particle_ts[i]);
+          vec_ts[i]  = G4ThreeVector(0,0,0);
+          sum_ts += mass_ts[i];
+          //std::cerr<<particle_ts[i]->GetParticleName()<<" "<<mass_ts[i]<<std::endl;
+        }
 	//std::cerr<<"ene: "<<sum_ts<<" "<<CMmass_ts<<std::endl;
-	if( CMmass_ts<sum_ts ){ goto START; }
-	if( ManyBody(CMmass_ts, nBody_ts, mass_ts, vec_ts) ){ break; }
-      }
+        if( CMmass_ts<sum_ts ){ goto START; }
+        if( ManyBody(CMmass_ts, nBody_ts, mass_ts, vec_ts) ){ break; }
+      }//while 
 
       std::vector <G4LorentzVector> finl_ts;
       for( int i=0; i<nBody_ts; i++ ){
-	G4LorentzVector tmp;
-	tmp.setVectM(vec_ts[i], mass_ts[i]);
-	tmp.boost(boost_ts);
-	finl_ts.push_back(tmp);
+        G4LorentzVector tmp;
+        tmp.setVectM(vec_ts[i], mass_ts[i]);//CM frame of 2nd step particles
+        tmp.boost(boost_ts);//CM in 2nd step -> CM in beam + target
+        finl_ts.push_back(tmp);// 
       }
 
-      vec[in1_id]      = finl_ts[0].vect();
+      vec[in1_id]      = finl_ts[0].vect();//CM in beam + target
       mass[in1_id]     = mass_ts[0];
       particle[in1_id] = particle_ts[0];
       for( int i=0; i<nBody_ts-1; i++ ){
-	vec[nFinl+i]      = finl_ts[i+1].vect();
-	mass[nFinl+i]     = mass_ts[i+1];
-	particle[nFinl+i] = particle_ts[i+1];
+        vec[nFinl+i]      = finl_ts[i+1].vect();//CM in beam + target
+        mass[nFinl+i]     = mass_ts[i+1];
+        particle[nFinl+i] = particle_ts[i+1];
       }
 
       nSpec--;
@@ -888,6 +903,8 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     const double mom_max   = 2.0*GeV;
     double theta, mom;
     for( int i=0; i<nBody; i++ ){
+      //asano memo
+      //neutron selection (pdg==2112)
       if( particle[i]->GetPDGEncoding()==2112 ){
 	G4LorentzVector tmp;
 	tmp.setVectM(vec[i], mass[i]);
@@ -909,8 +926,8 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //---------------------------------------------------//
     G4LorentzVector lvec[3];
     for(int i=0;i<3;i++){
-      lvec[i].setVectM(vec[i], mass[i]);
-      lvec[i].boost(boost);
+      lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
+      lvec[i].boost(boost);//boost to the lab frame
     }
     //0: missing neutron
     //1: S+/-
@@ -978,6 +995,9 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
   return cs.Id();
 }
     
+//asano memo
+//phase space generator with angular distribution
+//param[] is the Legendre coefficient
 //////////////////////////////////////////////////////
 bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
 					   const G4double* mass, G4ThreeVector*vec,
@@ -1025,8 +1045,8 @@ bool KnuclPrimaryGeneratorAction::ManyBody(G4double CMmass, G4int nBody,
 					   const G4double* mass, G4ThreeVector*vec)
 //////////////////////////////////////////////////////
 {
-  //G4int total_mass = 0;
-  G4double total_mass = 0;
+  G4int total_mass = 0;
+  //G4double total_mass = 0;
   for( int i=0; i<nBody; i++ ){
     total_mass += mass[i];
   }
