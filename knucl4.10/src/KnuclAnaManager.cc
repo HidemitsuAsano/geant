@@ -28,6 +28,7 @@ KnuclAnaManager::KnuclAnaManager(std::string filename)
 
   //--- read card-file ---//
   InitParameters();
+  CardFileName = filename;
   ComCardsInput *inp = new ComCardsInput(filename.c_str());
   SetParameters(inp);
   if( strcmp(AddCardFile.Data(),"") ){
@@ -127,7 +128,8 @@ void KnuclAnaManager::BeginOfRunAction()
   InitCounter();
 
   //-- save Card-File as text ---//
-  TMacro cardfile("KnuclSetting.card");
+  //TMacro cardfile("KnuclSetting.card");
+  TMacro cardfile(CardFileName.Data());
   cardfile.Write();
   if( strcmp(AddCardFile.Data(),"") ){
     TMacro cardfile2(AddCardFile.Data());

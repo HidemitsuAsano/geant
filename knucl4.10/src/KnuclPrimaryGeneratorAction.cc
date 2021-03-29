@@ -108,6 +108,7 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
     if(csID == 1525)   genfile = new TFile("probSm.root","READ");
     if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
     if(csID == 2006)   genfile = new TFile("probnpipiL.root","READ");
+    if(csID ==  735)   genfile = new TFile("probK0nn.root","READ");
     //G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
     if(genfile)h2genprob = (TH2D*) genfile->Get("h2prob");
     if(genfile)h2genprob->Print();
@@ -934,12 +935,6 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: pi-/+
     G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
 
-    //npipiL simulation
-    //0: n
-    //1: pi+
-    //2: pi-
-    //3: missing Lambda
-    //G4LorentzVector TL_piSigma = lvec[0]+lvec[1]+lvec[2];
     G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
     TL_beam.setVectM(beammom,493.);
@@ -979,6 +974,32 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     double prob = h2genprob->Interpolate(piSmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
+
+  if(MakeUniformInqmass==3){
+    G4LorentzVector lvec[3];
+    for(int i=0;i<3;i++){
+      lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
+      lvec[i].boost(boost);//boost to the lab frame
+    }
+    //0: K0
+    //1: n
+    //2: n
+    G4LorentzVector TL_K0n = lvec[0]+lvec[1];
+
+    G4ThreeVector beammom(0,0,1000.);
+    G4LorentzVector TL_beam;
+    TL_beam.setVectM(beammom,493.);
+    //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;//npipiL
+    double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
+    double K0nmass = TL_K0n.m()/1000.;
+
+    double prob = h2genprob->Interpolate(K0nmass,q);
+    if(  prob <  G4UniformRand()) goto START;
+  }
+
+
+
+
 
   //---------------------//
   //--- set particles ---//

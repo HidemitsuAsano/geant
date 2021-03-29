@@ -1307,6 +1307,8 @@ void KnuclDetectorConstruction::ConstructBeamDump()
 }
 void KnuclDetectorConstruction::ConstructTarget()
 {
+  ConstructShape(CID_Coil);
+  ConstructShape(CID_Bobbin);
   ConstructShape(CID_CDCCFRP);
   ConstructShape(CID_CDCMylar);
   ConstructShape(CID_TarChm);
@@ -1322,6 +1324,4 @@ void KnuclDetectorConstruction::ConstructTarget()
   ConstructShape(CID_CellRing);
   ConstructShape(CID_BShield);
   ConstructShape(CID_BFrange);
-  ConstructShape(CID_Bobbin);
-  ConstructShape(CID_Coil);
 }
