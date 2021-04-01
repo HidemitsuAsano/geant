@@ -945,6 +945,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     double prob = h2genprob->Interpolate(piSmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
+
   
   //npipiL sim.
   if(MakeUniformInqmass==2){
@@ -974,7 +975,9 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     double prob = h2genprob->Interpolate(piSmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
+  
 
+  //K0nn uniform
   if(MakeUniformInqmass==3){
     G4LorentzVector lvec[3];
     for(int i=0;i<3;i++){
@@ -997,9 +1000,40 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     if(  prob <  G4UniformRand()) goto START;
   }
 
+  if(MakeUniformInqmass==4){
+    //---------------------------------------------------//
+    //phase space but limited range
+    //---------------------------------------------------//
+    G4LorentzVector lvec[3];
+    for(int i=0;i<3;i++){
+      lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
+      lvec[i].boost(boost);//boost to the lab frame
+    }
+    //0: missing neutron
+    //1: S+/-
+    //2: pi-/+
+    G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
+    double piSmass = TL_piSigma.m()/1000.;
+  
+    if( (piSmass < 1.40)  || (1.52<piSmass)  ) goto START;
+  }
+ 
+  if(MakeUniformInqmass==5){
+    G4LorentzVector lvec[3];
+    for(int i=0;i<3;i++){
+      lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
+      lvec[i].boost(boost);//boost to the lab frame
+    }
+    //0: K0
+    //1: n
+    //2: n
+    G4LorentzVector TL_K0n = lvec[0]+lvec[1];
 
+    G4LorentzVector TL_beam;
+    double K0nmass = TL_K0n.m()/1000.;
 
-
+    if( (K0nmass<1.40) || (1.52<K0nmass)  ) goto START;
+  }
 
   //---------------------//
   //--- set particles ---//

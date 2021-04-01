@@ -21,7 +21,7 @@
 // ********************************************************************
 //
 //
-// $Id: knucl.cc,v 1.6 2016/12/21 05:30:56 sakuma Exp $
+// $Id: knucl.cc,v 1.7 2019/03/20 21:45:40 asano Exp $
 // GEANT4 tag $Name:  $
 //
 // 
@@ -59,6 +59,7 @@
 //#include "G4SystemOfUnits.hh"
 
 #include "stdlib.h"
+#include <cctype>
 
 void ModDecayBranch();
 void AddKpp(KnuclAnaManager* anaManager);
@@ -76,12 +77,14 @@ int main(int argc,char** argv)
   std::string cs_list="";
   std::string shape_file="";
   std::string out_file="";
+  G4int seed =0 ;
   for( int i=1; i<argc; i++ ){
     if( strstr(argv[i], ".mac") ) macro_name=argv[i];
     else if( strstr(argv[i], ".card") ) knucl_card=argv[i];
     else if( strstr(argv[i], ".list") ) cs_list=argv[i];
     else if( strstr(argv[i], "shape") && strstr(argv[i], ".root") ) shape_file=argv[i];
     else if( strstr(argv[i], ".root") ) out_file=argv[i];
+    else if( std::isdigit(*argv[i]) ) seed=atoi(argv[i]);
     else{
       std::cout<<" !!! Invailed input !!! "<<argv[i]<<std::endl;
     }
@@ -110,6 +113,7 @@ int main(int argc,char** argv)
     std::cout<<"CSListFile : "<<cs_list<<std::endl;
     anaManager->SetCSFile(cs_list);
   }
+  anaManager->SetSeedNum(seed);
 
   // set mandatory initialization classes
   runManager->SetUserInitialization(new KnuclDetectorConstruction(anaManager));
