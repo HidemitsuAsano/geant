@@ -144,4 +144,4 @@ DebugInfo:DebugFlag          false         # maxlength str[1024]
 #------------------------------------------#
 #1 Uniform
 #0 PhaseSpace
-UniformGen:UniformGen         1
+UniformGen:UniformGen         4

@@ -8,14 +8,14 @@ Knucl:PhysicsList              QGSP_BERT_HP   # --- Building Physics List
                                            # "Shielding","ShieldingLEND"
                                            # + "","_EMV","_EMX","_EMY","_EMZ","_LIV","_PEN"
 					   #
-Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
+Knucl:ProcessID		   Single    	   # --- select reaction mode ---
 			       		   # Single / Beam /
 					   # neutron_efficiency_mode /
 					   # K3He / ReadFromFile
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_nSppim.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS_inoue/kd_all.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -60,17 +60,17 @@ Knucl:FowardAccept            0		   # forward acceptance selection
 					   #  0: no selection
 					   #  1: neutrons in NC acceptance
 #------------------------------------------#
-#Single:Particle	             3112	   # particle name
+Single:Particle	             -211	   # particle name
 			     		   # for Single / Beam
 			     		   #
-#Single:Momentum_MIN          0.01	   # momentum of the single particle
-#Single:Momentum_MAX          1.0	   # unit in [GeV/c]
+Single:Momentum_MIN          0.01	   # momentum of the single particle
+Single:Momentum_MAX          1.0	   # unit in [GeV/c]
 			     		   #
-#Single:Theta_MIN             0.0	   # theta angle of the single particle
-#Single:Theta_MAX             1.0	   # unit in Cosine theta
+Single:Theta_MIN             0.0	   # theta angle of the single particle
+Single:Theta_MAX             0.00001	   # unit in Cosine theta
 			     		   #
-#Single:Vertex_MIN    -10.0 -10.0 -30.0	   # 3D vertex pos., unit in [mm]
-#Single:Vertex_MAX    10.0 10.0 30.0	   # 3D vertex pos., unit in [mm]
+Single:Vertex_MIN    0.0 0.0 0.0   # 3D vertex pos., unit in [mm]
+Single:Vertex_MAX    0.0 0.0 0.0	 # 3D vertex pos., unit in [mm]
 #------------------------------------------#
 Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim.conf
                                            # detector configuration
@@ -102,7 +102,7 @@ Detector:ADCThreshold_4        0.2         # [T0]   Unit in [MeV]
 Detector:ADCThreshold_5       0.06         # [DEF]  Unit in [MeV]
 Detector:ADCThreshold_14       0.6         # [CVC]  Unit in [MeV]
 Detector:ADCThreshold_35       0.6         # [PC]   Unit in [MeV]
-Detector:ADCThreshold_32       0.1         # [NC]   Unit in [MeV]
+Detector:ADCThreshold_32       0.0         # [NC]   Unit in [MeV]
 Detector:ADCThreshold_33       0.2         # [BVC]  Unit in [MeV]
 Detector:ADCThreshold_41       0.1         # [BPD]  Unit in [MeV]
 Detector:ADCThreshold_42      0.06         # [IH]   Unit in [MeV]
@@ -142,4 +142,3 @@ DataInfo:Comment             test          # maxlength str[1024]
 DebugInfo:DebugFlag          false         # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
 #------------------------------------------#
-UniformGen:UniformGen         4

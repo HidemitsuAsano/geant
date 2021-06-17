@@ -15,7 +15,7 @@ Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_nSppim.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS_inoue/kd_Lpimp.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -142,4 +142,4 @@ DataInfo:Comment             test          # maxlength str[1024]
 DebugInfo:DebugFlag          false         # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
 #------------------------------------------#
-UniformGen:UniformGen         4
+UniformGen:UniformGen         0

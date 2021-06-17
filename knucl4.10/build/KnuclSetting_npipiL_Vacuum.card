@@ -15,7 +15,7 @@ Knucl:ProcessID		       K3He 	   # --- select reaction mode ---
 					   # [K3He-mode needs CS-file]
 					   #
 #Knucl:CSFileName	       CS.list	   # CS file for K3He-mode
-Knucl:CSFileName	       CS_inoue/kd_nSppim.list	   # CS file for K3He-mode
+Knucl:CSFileName	       CS_inoue/kd_npipiL.list	   # CS file for K3He-mode
 					   #
 Knucl:FermiMotion              1	   # 0: w/o Fermi motion,
 			       		   # 1: w/  Fermi motion in K3He-mode
@@ -31,7 +31,7 @@ Knucl:TwoStep		       0	   # 0: w/o 2-step reactions
 			       		   #  1: YN->YN elastic (1N/2N)
 					   #  2: NN->NN elastic (2N)
 					   #
-Knucl:BeamMomentum           1.000	   # Unit in [GeV/c]
+Knucl:BeamMomentum           1.010	   # Unit in [GeV/c]
 			     		   #
 #Knucl:BindingEnergy           50.0	   # in MeV
 			      		   #
@@ -72,7 +72,7 @@ Knucl:FowardAccept            0		   # forward acceptance selection
 #Single:Vertex_MIN    -10.0 -10.0 -30.0	   # 3D vertex pos., unit in [mm]
 #Single:Vertex_MAX    10.0 10.0 30.0	   # 3D vertex pos., unit in [mm]
 #------------------------------------------#
-Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim.conf
+Detector:ConfFileName          conf/Run78/analyzer_kwsk_sim_Vacuum.conf
                                            # detector configuration
 					   #
 Detector:DORAFieldMapFlag      1           # 1=use field map,
@@ -104,7 +104,7 @@ Detector:ADCThreshold_14       0.6         # [CVC]  Unit in [MeV]
 Detector:ADCThreshold_35       0.6         # [PC]   Unit in [MeV]
 Detector:ADCThreshold_32       0.1         # [NC]   Unit in [MeV]
 Detector:ADCThreshold_33       0.2         # [BVC]  Unit in [MeV]
-Detector:ADCThreshold_41       0.1         # [BPD]  Unit in [MeV]
+Detector:ADCThreshold_41       9999.9      # [BPD]  Unit in [MeV]
 Detector:ADCThreshold_42      0.06         # [IH]   Unit in [MeV]
 
 Detector:FWDTrigger		0	   # You can select NC/PC fired events.
@@ -117,7 +117,7 @@ TargetInfo:TargetLength      240.0         # Unit in [mm]
 #------------------------------------------#
 #FileInfo:InputDataFile       test.dat	   #
 #FileInfo:OutputRootFile      test_mc.root  #
-FileInfo:FillLevel         	4	   # You can select fill level of final
+FileInfo:FillLevel         	1	   # You can select fill level of final
 					   # tracks.
 					   #  0: CDH/CDC/PC/NC tracks only
 					   #  1: + parent tracks
@@ -134,7 +134,8 @@ FileInfo:FillLevel         	4	   # You can select fill level of final
 			    		   # please add this param. if you
 					   # would like to save output data
 #------------------------------------------#
-AnalysisInfo:Seed            external	   # %d (fix) / random
+#AnalysisInfo:Seed            random	   # %d (fix) / random
+AnalysisInfo:Seed            external	   
 #------------------------------------------#
 DataInfo:Comment             test          # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
@@ -142,4 +143,3 @@ DataInfo:Comment             test          # maxlength str[1024]
 DebugInfo:DebugFlag          false         # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
 #------------------------------------------#
-UniformGen:UniformGen         4
