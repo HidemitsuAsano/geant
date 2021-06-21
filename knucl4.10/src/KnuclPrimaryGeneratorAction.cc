@@ -1014,8 +1014,13 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: pi-/+
     G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
     double piSmass = TL_piSigma.m()/1000.;
+    G4ThreeVector beammom(0,0,1000.);
+    G4LorentzVector TL_beam;
+    TL_beam.setVectM(beammom,493.);
+    double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//piSigma
   
     if( (piSmass < 1.40)  || (1.52<piSmass)  ) goto START;
+    if( q>1.0) goto START;
   }
  
   if(MakeUniformInqmass==5){
@@ -1029,10 +1034,14 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: n
     G4LorentzVector TL_K0n = lvec[0]+lvec[1];
 
+    G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
+    TL_beam.setVectM(beammom,493.);
     double K0nmass = TL_K0n.m()/1000.;
+    double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
 
     if( (K0nmass<1.40) || (1.52<K0nmass)  ) goto START;
+    if( q>1.0) goto START;
   }
 
   //---------------------//
