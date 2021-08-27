@@ -106,7 +106,7 @@ KnuclPrimaryGeneratorAction::KnuclPrimaryGeneratorAction(KnuclAnaManager* ana)
     std::cout << "Make Uniform in q vs mass " << std::endl;
     if(csID == 1725)   genfile = new TFile("probSp.root","READ");
     if(csID == 1525)   genfile = new TFile("probSm.root","READ");
-    if(csID == 1600)   genfile = new TFile("probLpim.root","READ");
+    if(csID == 3098)   genfile = new TFile("probLpim.root","READ");
     if(csID == 2006)   genfile = new TFile("probnpipiL.root","READ");
     if(csID ==  735)   genfile = new TFile("probK0nn.root","READ");
     //G4cout << "File name for making uniform distribution : " << genfile->GetName() << G4endl;
@@ -1043,6 +1043,31 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     if( (K0nmass<1.40) || (1.52<K0nmass)  ) goto START;
     if( q>1.0) goto START;
   }
+
+  //Lambda pi- proton 
+  if(MakeUniformInqmass==6){
+    G4LorentzVector lvec[3];
+    for(int i=0;i<3;i++){
+      lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
+      lvec[i].boost(boost);//boost to the lab frame
+    }
+    //0: Lambda
+    //1: pi-
+    //2: p_miss
+    G4LorentzVector TL_LambdaPim = lvec[0]+lvec[1];
+
+    G4ThreeVector beammom(0,0,1000.);
+    G4LorentzVector TL_beam;
+    TL_beam.setVectM(beammom,493.);
+    double LambdaPimmass = TL_LambdaPim.m()/1000.;
+    double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
+
+    double prob = h2genprob->Interpolate(LambdaPimmass,q);
+    if(  prob <  G4UniformRand()) goto START;
+  }
+
+
+
 
   //---------------------//
   //--- set particles ---//
