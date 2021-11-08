@@ -920,7 +920,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     }
   } // if( anaManager->GetFowardAccept() ){
   //std::cerr<<"num of loop = "<<counter<<std::endl;
-  
+   
   if(MakeUniformInqmass==1){
     //---------------------------------------------------//
     //uniform distribution for 3-body 
@@ -935,9 +935,10 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: pi-/+
     G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
 
-    G4ThreeVector beammom(0,0,1000.);
+    //G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
     //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;//npipiL
     double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//piSigma
     double piSmass = TL_piSigma.m()/1000.;
@@ -945,10 +946,8 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     double prob = h2genprob->Interpolate(piSmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
-
-  
   //npipiL sim.
-  if(MakeUniformInqmass==2){
+  else if(MakeUniformInqmass==2){
     G4LorentzVector lvec[4];
     for(int i=0;i<4;i++){
       lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
@@ -965,20 +964,18 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: pi-
     //3: missing Lambda
     //G4LorentzVector TL_piSigma = lvec[0]+lvec[1]+lvec[2];
-    G4ThreeVector beammom(0,0,1000.);
+    //G4ThreeVector beammom(0,0,1000.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
-  //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;//npipiL
-    double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//piSigma
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
+    double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//
     double piSmass = TL_piSigma.m()/1000.;
 
     double prob = h2genprob->Interpolate(piSmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
-  
-
   //K0nn uniform
-  if(MakeUniformInqmass==3){
+  else if(MakeUniformInqmass==3){
     G4LorentzVector lvec[3];
     for(int i=0;i<3;i++){
       lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
@@ -989,9 +986,11 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: n
     G4LorentzVector TL_K0n = lvec[0]+lvec[1];
 
-    G4ThreeVector beammom(0,0,1000.);
+    //G4ThreeVector beammom(0,0,1000.);
+    //
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
     //double q = (TL_beam.vect()-lvec[3].vect()).mag()/1000.;//npipiL
     double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
     double K0nmass = TL_K0n.m()/1000.;
@@ -999,8 +998,7 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     double prob = h2genprob->Interpolate(K0nmass,q);
     if(  prob <  G4UniformRand()) goto START;
   }
-
-  if(MakeUniformInqmass==4){
+  else if(MakeUniformInqmass==4){
     //---------------------------------------------------//
     //phase space but limited range
     //---------------------------------------------------//
@@ -1014,16 +1012,15 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: pi-/+
     G4LorentzVector TL_piSigma = lvec[1]+lvec[2];
     double piSmass = TL_piSigma.m()/1000.;
-    G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
     double q = (TL_beam.vect()-lvec[0].vect()).mag()/1000.;//piSigma
   
     if( (piSmass < 1.40)  || (1.52<piSmass)  ) goto START;
     if( q>1.0) goto START;
   }
- 
-  if(MakeUniformInqmass==5){
+  else if(MakeUniformInqmass==5){
     G4LorentzVector lvec[3];
     for(int i=0;i<3;i++){
       lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
@@ -1034,18 +1031,17 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: n
     G4LorentzVector TL_K0n = lvec[0]+lvec[1];
 
-    G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
     double K0nmass = TL_K0n.m()/1000.;
     double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
 
     if( (K0nmass<1.40) || (1.52<K0nmass)  ) goto START;
     if( q>1.0) goto START;
   }
-
   //Lambda pi- proton 
-  if(MakeUniformInqmass==6){
+  else if(MakeUniformInqmass==6){
     G4LorentzVector lvec[3];
     for(int i=0;i<3;i++){
       lvec[i].setVectM(vec[i], mass[i]);//vec is 3-mom. vec in CM frame.
@@ -1056,9 +1052,9 @@ int KnuclPrimaryGeneratorAction::KminusReac(G4Event* anEvent, const CrossSection
     //2: p_miss
     G4LorentzVector TL_LambdaPim = lvec[0]+lvec[1];
 
-    G4ThreeVector beammom(0,0,1000.);
     G4LorentzVector TL_beam;
-    TL_beam.setVectM(beammom,493.);
+    G4ThreeVector beammom = anaManager->GetBeamMom();
+    TL_beam.setVectM(beammom,anaManager->GetBeamMass());
     double LambdaPimmass = TL_LambdaPim.m()/1000.;
     double q = (TL_beam.vect()-lvec[2].vect()).mag()/1000.;//piSigma
 
