@@ -1,5 +1,5 @@
 #!/bin/tcsh -f
-set Version="29"
+set Version="1"
 #set DATADIR="/group/had/knucl/e15/data/Run78/"
 set OUTDIR="/group/had/knucl/e15/asano/sim/"
 #set KWSKDIR="/group/had/knucl/e15/shinngo/Run78/evtracking/"
@@ -13,24 +13,25 @@ if( ! -d $logdir) then
   mkdir -p  $logdir
 endif 
 
-set OUTDIRSUB="${OUTDIR}sim${Version}"
+set OUTDIRSUB="${OUTDIR}simpS0pim_ps${Version}"
 if( ! -d $OUTDIRSUB) then 
  mkdir -p $OUTDIRSUB
 endif
+
 #set SRCDIR="/gpfs/home/had/hiasano/ana/k18ana/src/"
 #cp $SRCDIR/EventAnalysisIMPiSigma.cpp $OUTDIRSUB/
 
-@ i = 1600
-while ($i < 3200)   
+@ i = 0
+while ($i < 400)   
 
   set EXEC___="./knucl"
   set CONF___="conf/Run78/analyzer_kwsk_sim.conf"
-  set CARD___="KnuclSetting_nSmpip.card"
+  set CARD___="KnuclSetting_pS0pim_ps.card"
   set MAC___="run.mac"
   set jobnum=`printf  "%03d"  $i`
 
   #set INPFILE=${DATADIR}"run78_0${jobnum}.dat"
-  set OUTFILE=${OUTDIRSUB}"/sim_nSmpip_0${jobnum}.root"
+  set OUTFILE=${OUTDIRSUB}"/sim_pS0pim_ps_0${jobnum}.root"
   #set CDSFILE=${KWSKDIR}"run78_0${jobnum}_evtracking.root"
 
   #echo ${INPFILE}
@@ -41,3 +42,4 @@ while ($i < 3200)
   bsub -o $logname -q l ${EXEC___} ${CARD___} ${MAC___} ${OUTFILE} $j
     @ i ++
 end
+

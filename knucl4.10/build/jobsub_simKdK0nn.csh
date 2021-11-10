@@ -22,10 +22,10 @@ endif
 #cp $SRCDIR/EventAnalysisIMPiSigma.cpp $OUTDIRSUB/
 
 @ i = 0
-while ($i < 1600)   
+while ($i < 3200)   
 
   set EXEC___="./knucl"
-  set CONF___="conf/Run78/analyzer_kwsk.conf"
+  set CONF___="conf/Run78/analyzer_kwsk_sim.conf"
   set CARD___="KnuclSetting_K0nn.card"
   set MAC___="run.mac"
   set jobnum=`printf  "%03d"  $i`

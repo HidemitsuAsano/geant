@@ -115,6 +115,8 @@ void nc_singleeff(const char* filename="")
 
   TH1F* his0 = new TH1F("CDH_dE", "CDH_dE", 1000, 0, 100);
   TH1F* his1 = new TH1F("CDH_dE_cut","CDH_dE_cut",  1000, 0, 100);
+  TH1F* CDHmul = new TH1F("CDH_mul","CDH_mul",10,0,10);
+  TH1F* diff_CDH = new TH1F("diff_CDH","diff_CDH",73,-36.5,73.5);
   TH1F* his2[36];
   TH1F* his3[36];
   for( int i=0; i<36; i++ ){
@@ -175,6 +177,7 @@ void nc_singleeff(const char* filename="")
  
     double ene_dep = 0;
     double de_seg[36] = {0};
+    int cdhmul=0;
     for (Int_t j=0; j<detectorData->detectorHitSize(); j++) {
       int cid = detectorData->detectorHit(j)->detectorID();
       if( cid == CID_CDH ){
@@ -184,6 +187,7 @@ void nc_singleeff(const char* filename="")
         ene_dep += dE;
         de_seg[seg] = dE;
         if(dE>threshold){
+          cdhmul++;
           int pdgid = dhit->pdg();
           int trackid = dhit->trackID();
           Track *track_p  = FindTrackFromMcIndex(mcData,trackid);
@@ -202,7 +206,7 @@ void nc_singleeff(const char* filename="")
         }
       }
     }
-    
+    CDHmul->Fill(cdhmul);
     //if(ene_dep) cerr<<ene_dep<<" -> ";
     //if( dE_scale_flag ) ene_dep = ene_dep*dE_par1*(exp(ene_dep/dE_par2));
     //if(ene_dep) cerr<<ene_dep<<endl;

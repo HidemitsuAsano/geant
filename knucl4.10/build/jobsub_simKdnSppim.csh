@@ -1,5 +1,5 @@
 #!/bin/tcsh -f
-set Version="27"
+set Version="29"
 #set DATADIR="/group/had/knucl/e15/data/Run78/"
 set OUTDIR="/group/had/knucl/e15/asano/sim/"
 #set KWSKDIR="/group/had/knucl/e15/shinngo/Run78/evtracking/"
@@ -21,11 +21,11 @@ endif
 #set SRCDIR="/gpfs/home/had/hiasano/ana/k18ana/src/"
 #cp $SRCDIR/EventAnalysisIMPiSigma.cpp $OUTDIRSUB/
 
-@ i = 0
-while ($i < 1600)   
+@ i = 1600
+while ($i < 3200)   
 
   set EXEC___="./knucl"
-  set CONF___="conf/Run78/analyzer_kwsk.conf"
+  set CONF___="conf/Run78/analyzer_kwsk_sim.conf"
   set CARD___="KnuclSetting_nSppim.card"
   set MAC___="run.mac"
   set jobnum=`printf  "%03d"  $i`
