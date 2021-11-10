@@ -81,7 +81,7 @@ Detector:DORAFieldMapFlag      1           # 1=use field map,
 Detector:USWKFieldMapFlag      1           # 1=use field map,
 			       		   # 0=DO NOT use field map
 					   #
-Detector:FieldInCDC            0.7165      # Unit in [Tesla]
+Detector:FieldInCDC            0.7142     # Unit in [Tesla]
 			      		   # if use field map, the calculated
 					   # value at DORA center will be
 					   # normalized to this value
@@ -142,4 +142,4 @@ DataInfo:Comment             test          # maxlength str[1024]
 DebugInfo:DebugFlag          false         # maxlength str[1024]
 			     		   # *** CAUTION *** Not insert space!
 #------------------------------------------#
-UniformGen:UniformGen         5
+UniformGen:UniformGen         3
